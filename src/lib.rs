@@ -2,6 +2,9 @@
 // Copyright © 2016 The developers of libnuma-sys. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/lemonrock/libnuma-sys/master/COPYRIGHT.
 
 
+#![no_std]
+
+
 extern crate libc;
 use libc::c_int;
 use libc::c_ulong;
@@ -12,9 +15,9 @@ use libc::c_long;
 use libc::c_char;
 use libc::pid_t;
 use libc::size_t;
-use ::std::clone::Clone;
-use ::std::default::Default;
-use ::std::mem::zeroed;
+use ::core::clone::Clone;
+use ::core::default::Default;
+use ::core::mem::zeroed;
 
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))] pub const NUMA_NUM_NODES: usize = 128;

@@ -3,8 +3,8 @@
 
 [package]
 name = "libnuma-sys"
-description = "An allocator that wraps libnuma"
-keywords = ["libnuma", "NUMA", "wrapper", "C", "allocator", "malloc"]
+description = "An binding that wraps libnuma"
+keywords = ["libnuma", "NUMA", "wrapper", "C", "binding"]
 license = "MIT"
 authors = ["Raphael Cohn <raphael.cohn@stormmq.com>"]
 documentation = "https://github.com/lemonrock/libnuma-sys/blob/master/README.md"
@@ -16,9 +16,6 @@ include = ["README.md", "LICENSE", "COPYRIGHT", "src/**/*.rs", "benches/**/*.rs"
 readme = "README.md"
 publish = true
 version = "0.0.1"
-
-[replace]
-"libc:0.2.11" = { git = "https://github.com/lemonrock/libc" }
 
 [dependencies.libc]
 version = "0.2.11"
