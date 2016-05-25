@@ -19,8 +19,6 @@ version = "0.0.1"
 
 [dependencies.libc]
 version = "0.2.11"
-default-features = false
-features = []
 
 [profile.release]
 opt-level = 3
