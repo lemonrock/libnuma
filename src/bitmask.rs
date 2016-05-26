@@ -2,16 +2,19 @@
 // Copyright © 2016 The developers of libnuma-sys. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/lemonrock/libnuma-sys/master/COPYRIGHT.
 
 
-#[cfg(not(feature = "use_std"))] extern crate std as core;
-use self::core::ops::Drop;
+use std::ops::Drop;
 use ::libc::c_ulong;
 use ::libc::c_uint;
 use ::libc::c_int;
 use ::libc::size_t;
 use ::libc::pid_t;
 use ::libc::c_void;
-//use ::libc::c_char;
+use ::libc::c_char;
+use std::ptr::null_mut;
+use std::ffi::CStr;
 use super::nodemask_t;
+extern crate errno;
+use self::errno::errno;
 
 
 #[repr(C)]
@@ -40,6 +43,10 @@ impl Drop for bitmask
 
 impl bitmask
 {
+	
+	
+	
+	
 	#[allow(trivial_casts)]
 	#[inline(always)]
 	pub fn get_interleave_mask<'a>() -> &'a mut bitmask
@@ -58,14 +65,6 @@ impl bitmask
 	
 	#[allow(trivial_casts)]
 	#[inline(always)]
-	pub fn allocate_cpumask<'a>() -> &'a mut bitmask
-	{
-		let reference = unsafe { numa_allocate_cpumask().as_mut() };
-		reference.expect("Underlying libnuma API numa_allocate_cpumask failed")
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
 	pub fn get_membind<'a>() -> &'a mut bitmask
 	{
 		let reference = unsafe { numa_get_membind().as_mut() };
@@ -80,49 +79,23 @@ impl bitmask
 		reference.expect("Underlying libnuma API numa_get_mems_allowed failed")
 	}
 	
+	#[cfg(not(feature = "use_std"))]
 	#[allow(trivial_casts)]
 	#[inline(always)]
-	pub fn get_run_node_mask<'a>() -> &'a mut bitmask
+	pub fn parse_node_string<'a>(string: &CStr) -> &'a mut bitmask
 	{
-		let reference = unsafe { numa_get_run_node_mask().as_mut() };
-		reference.expect("Underlying libnuma API numa_get_run_node_mask failed")
+		let reference = unsafe { numa_parse_nodestring(string.as_ptr()).as_mut() };
+		reference.expect("Underlying libnuma API numa_parse_nodestring failed")
 	}
-	
-	// #[cfg(not(feature = "use_std"))]
-	// #[allow(trivial_casts)]
-	// #[inline(always)]
-	// pub fn parse_node_string<'a>(string: &std::ffi::CStr) -> &'a mut bitmask
-	// {
-	// 	let reference = unsafe { numa_parse_nodestring(string.as_ptr()).as_mut() };
-	// 	reference.expect("Underlying libnuma API numa_parse_nodestring failed")
-	// }
-	//
-	// #[cfg(not(feature = "use_std"))]
-	// #[allow(trivial_casts)]
-	// #[inline(always)]
-	// pub fn parse_cpu_string<'a>(string: &std::ffi::CStr) -> &'a mut bitmask
-	// {
-	// 	let reference = unsafe { numa_parse_cpustring(string.as_ptr()).as_mut() };
-	// 	reference.expect("Underlying libnuma API numa_parse_cpustring failed")
-	// }
-	//
-	// #[cfg(not(feature = "use_std"))]
-	// #[allow(trivial_casts)]
-	// #[inline(always)]
-	// pub fn parse_node_string_all<'a>(string: &std::ffi::CStr) -> &'a mut bitmask
-	// {
-	// 	let reference = unsafe { numa_parse_nodestring_all(string.as_ptr()).as_mut() };
-	// 	reference.expect("Underlying libnuma API numa_parse_nodestring failed")
-	// }
-	//
-	// #[cfg(not(feature = "use_std"))]
-	// #[allow(trivial_casts)]
-	// #[inline(always)]
-	// pub fn parse_cpu_string_all<'a>(string: &std::ffi::CStr) -> &'a mut bitmask
-	// {
-	// 	let reference = unsafe { numa_parse_cpustring_all(string.as_ptr()).as_mut() };
-	// 	reference.expect("Underlying libnuma API numa_parse_cpustring failed")
-	// }
+
+	#[cfg(not(feature = "use_std"))]
+	#[allow(trivial_casts)]
+	#[inline(always)]
+	pub fn parse_node_string_all<'a>(string: &CStr) -> &'a mut bitmask
+	{
+		let reference = unsafe { numa_parse_nodestring_all(string.as_ptr()).as_mut() };
+		reference.expect("Underlying libnuma API numa_parse_nodestring failed")
+	}
 	
 	#[allow(trivial_casts)]
 	#[inline(always)]
@@ -130,13 +103,6 @@ impl bitmask
 	{
 		let reference = unsafe { numa_bitmask_alloc(size as c_uint).as_mut() };
 		reference.expect("Underlying libnuma API numa_bitmask_alloc failed")
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn bind(&mut self)
-	{
-		unsafe { numa_bind(self as *mut bitmask) }
 	}
 	
 	#[allow(trivial_casts)]
@@ -151,20 +117,6 @@ impl bitmask
 	pub fn set_membind(&mut self)
 	{
 		unsafe { numa_set_membind(self as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn run_on_node_mask(&mut self) -> c_int
-	{
-		unsafe { numa_run_on_node_mask(self as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn run_on_node_mask_all(&mut self) -> c_int
-	{
-		unsafe { numa_run_on_node_mask_all(self as *mut bitmask) }
 	}
 	
 	#[allow(trivial_casts)]
@@ -186,13 +138,6 @@ impl bitmask
 	pub fn to_nodemask_memory(&mut self, size: size_t, memory: *mut c_void)
 	{
 		unsafe { numa_tonodemask_memory(memory, size, self as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn node_to_cpus(&mut self, node: c_int) -> c_int
-	{
-		unsafe { numa_node_to_cpus(node, self as *mut bitmask) }
 	}
 	
 	#[allow(trivial_casts)]
@@ -295,27 +240,19 @@ impl bitmask
 extern "C"
 {
 	fn numa_allocate_nodemask() -> *mut bitmask;
-	fn numa_allocate_cpumask() -> *mut bitmask;
 	fn numa_get_interleave_mask() -> *mut bitmask;
 	fn numa_get_membind() -> *mut bitmask;
 	fn numa_get_mems_allowed() -> *mut bitmask;
-	fn numa_get_run_node_mask() -> *mut bitmask;
 	fn numa_bitmask_alloc(bmp: c_uint) -> *mut bitmask;
 	
-//	fn numa_parse_nodestring(string: *const c_char) -> *mut bitmask;
-// 	fn numa_parse_cpustring(string: *const c_char) -> *mut bitmask;
-// 	fn numa_parse_nodestring_all(string: *const c_char) -> *mut bitmask;
-// 	fn numa_parse_cpustring_all(string: *const c_char) -> *mut bitmask;
+	fn numa_parse_nodestring(string: *const c_char) -> *mut bitmask;
+	fn numa_parse_nodestring_all(string: *const c_char) -> *mut bitmask;
 	
-	fn numa_bind(nodes: *mut bitmask);
 	fn numa_set_interleave_mask(nodemask: *mut bitmask);
 	fn numa_set_membind(nodemask: *mut bitmask);
-	fn numa_run_on_node_mask(mask: *mut bitmask) -> c_int;
-	fn numa_run_on_node_mask_all(mask: *mut bitmask) -> c_int;
 	fn numa_alloc_interleaved_subset(size: size_t, nodemask: *mut bitmask) -> *mut c_void;
 	fn numa_interleave_memory(mem: *mut c_void, size: size_t, mask: *mut bitmask);
 	fn numa_tonodemask_memory(mem: *mut c_void, size: size_t, mask: *mut bitmask);
-	fn numa_node_to_cpus(node: c_int, mask: *mut bitmask) -> c_int;
 	fn numa_migrate_pages(pid: c_int, from: *mut bitmask, to: *mut bitmask) -> c_int;
 	fn numa_sched_getaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
 	fn numa_sched_setaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;

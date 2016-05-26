@@ -11,15 +11,18 @@ use self::libc::EFAULT;
 use self::libc::EINVAL;
 use self::libc::EPERM;
 use self::libc::ESRCH;
+use self::libc::ERANGE;
 extern crate errno;
 use self::errno::errno;
 use std::default::Default;
 use std::mem::uninitialized;
 use super::NumaMemory;
+use super::CpuMask;
+use super::bitmask;
 
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
-pub struct NumaNode(c_int);
+pub struct NumaNode(pub c_int);
 
 impl NumaNode
 {
@@ -192,6 +195,22 @@ impl NumaNode
 	{
 		NumaMemory(unsafe { numa_alloc_onnode(size, self.0) }, size)
 	}
+	
+	pub fn node_to_cpus(&mut self) -> CpuMask
+	{
+		let cpu_mask = CpuMask::allocate();
+		
+		match unsafe { numa_node_to_cpus(self.0, cpu_mask.0) }
+		{
+			0 => cpu_mask,
+			-1 => match errno().0 
+			{
+				ERANGE => panic!("numa_node_to_cpus ERANGE"), // really shouldn't happen
+				unexpected @ _ => panic!("numa_node_to_cpus set an unexpected errno {}", unexpected),
+			},
+			unexpected @ _ => panic!("numa_node_to_cpus returned unexpected value {}", unexpected),
+		}
+	}
 }
 
 impl Default for NumaNode
@@ -221,4 +240,5 @@ extern "C"
 	fn numa_node_size64(node: c_int, freep: *mut c_longlong) -> c_longlong;
 	fn numa_run_on_node(node: c_int) -> c_int;
 	fn numa_alloc_onnode(size: size_t, node: c_int) -> *mut c_void;
+	fn numa_node_to_cpus(node: c_int, mask: *mut bitmask) -> c_int;
 }

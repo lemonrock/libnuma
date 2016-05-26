@@ -14,10 +14,12 @@ use libc::c_ulong;
 use libc::c_void;
 use libc::c_uint;
 use libc::c_long;
-use libc::size_t;
 
 pub use _bitmask::bitmask;
 #[path="bitmask.rs"] mod _bitmask;
+
+pub use cpuMask::CpuMask;
+mod cpuMask;
 
 pub use _nodemask_t::nodemask_t;
 pub use _nodemask_t::NUMA_NUM_NODES;
@@ -37,6 +39,15 @@ mod numaNode;
 
 pub use cpu::Cpu;
 mod cpu;
+
+pub use memory::Memory;
+mod memory;
+
+pub use allocatableMemory::AllocatableMemory;
+mod allocatableMemory;
+
+pub use reAllocatableMemory::ReAllocatableMemory;
+mod reAllocatableMemory;
 
 pub use numaMemory::NumaMemory;
 mod numaMemory;
@@ -77,11 +88,13 @@ pub fn locally_allocate_memory()
 	unsafe { numa_set_localalloc() }
 }
 
+// Should normally be set as false (otherwise we can exhaust memory sooner)
 pub fn set_strict(is_strict: bool)
 {
 	unsafe { numa_set_strict(if is_strict { 1 } else { 0 }) }
 }
 
+// Should normally be set as false (otherwise we can exhaust memory sooner)
 pub fn set_bind_policy(is_strict: bool)
 {
 	unsafe { numa_set_bind_policy(if is_strict { 1 } else { 0 }) }
@@ -92,6 +105,17 @@ extern "C"
 	fn numa_available() -> c_int;
 	fn numa_pagesize() -> c_int;
 	fn numa_set_localalloc();
+	fn numa_set_bind_policy(strict: c_int);
+	fn numa_set_strict(strict: c_int);
+	
+	// Not obviously useful; defined as weak symbols
+	// pub fn numa_error(_where: *mut c_char);
+	// pub fn numa_warn(num: c_int, fmt: *mut c_char, ...);
+	
+	
+	
+	
+	
 	
 	pub static mut numa_all_nodes_ptr: *mut bitmask;
 	pub static mut numa_nodes_ptr: *mut bitmask;
@@ -107,14 +131,10 @@ extern "C"
 	pub fn mbind(start: *mut c_void, len: c_ulong, mode: c_int, nmask: *const c_ulong, maxnode: c_ulong, flags: c_uint) -> c_long;
 	pub fn migrate_pages(pid: c_int, maxnode: c_ulong, frommask: *const c_ulong, tomask: *const c_ulong) -> c_long;
 	
-	pub fn numa_tonode_memory(start: *mut c_void, size: size_t, node: c_int);
-	pub fn numa_setlocal_memory(start: *mut c_void, size: size_t);
-	pub fn numa_police_memory(start: *mut c_void, size: size_t);
 	
-	fn numa_set_bind_policy(strict: c_int);
-	fn numa_set_strict(strict: c_int);
 	
-	// Not obviously useful; defined as weak symbols
-	// pub fn numa_error(_where: *mut c_char);
-	// pub fn numa_warn(num: c_int, fmt: *mut c_char, ...);
+	
+	
+	
+	
 }

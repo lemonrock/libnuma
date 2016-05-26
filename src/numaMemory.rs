@@ -6,6 +6,9 @@ extern crate libc;
 use self::libc::c_void;
 use self::libc::size_t;
 use super::NumaNode;
+use super::Memory;
+use super::AllocatableMemory;
+use super::ReAllocatableMemory;
 use std::ops::Drop;
 use std::ptr::null_mut;
 use std::result::Result;
@@ -16,41 +19,31 @@ use std::io::Error;
 #[unsafe_no_drop_flag]
 pub struct NumaMemory(pub *mut c_void, pub size_t);
 
-impl NumaMemory
+impl Memory for NumaMemory
 {
 	#[inline(always)]
-	pub fn is_null(&self) -> bool
+	fn pointer(&self) -> *mut c_void
 	{
-		self.0.is_null()
-	}
-	
-	#[inline(always)]
-	pub fn allocate_interleaved(size: size_t) -> NumaMemory
-	{
-		NumaMemory(unsafe { numa_alloc_interleaved(size) }, size)
+		self.0
 	}
 
 	#[inline(always)]
-	pub fn allocate_local(size: size_t) -> NumaMemory
+	fn size(&self) -> size_t
 	{
-		NumaMemory(unsafe { numa_alloc_local(size) }, size)
+		self.1
 	}
+}
 
+impl ReAllocatableMemory for NumaMemory
+{
 	#[inline(always)]
-	pub fn allocate(size: size_t) -> NumaMemory
+	fn reallocate(&mut self, new_size: size_t) -> Result<(), Error>
 	{
-		NumaMemory(unsafe { numa_alloc(size) }, size)
-	}
-
-	#[inline(always)]
-	pub fn allocate_on_node(size: size_t, node: NumaNode) -> NumaMemory
-	{
-		node.allocate(size)
-	}
-
-	#[inline(always)]
-	pub fn reallocate(&mut self, new_size: size_t) -> Result<(), Error>
-	{
+		if self.1 == new_size
+		{
+			return Ok(())
+		}
+		
 		let result = unsafe { numa_realloc(self.0, self.1, new_size) };
 		if result.is_null()
 		{
@@ -59,6 +52,16 @@ impl NumaMemory
 		self.0 = result;
 		self.1 = new_size;
 		Ok(())
+	}
+}
+
+impl AllocatableMemory for NumaMemory
+{
+	/// Slow because it calls numa_police_memory on every single page (pagesize as per numa_pagesize())
+	#[inline(always)]
+	fn allocate(size: size_t) -> NumaMemory
+	{
+		NumaMemory(unsafe { numa_alloc(size) }, size)
 	}
 }
 
@@ -73,6 +76,27 @@ impl Drop for NumaMemory
 		}
 		unsafe { numa_free(self.0, self.1) };
 		self.0 = null_mut();
+	}
+}
+
+impl NumaMemory
+{	
+	#[inline(always)]
+	pub fn allocate_interleaved(size: size_t) -> NumaMemory
+	{
+		NumaMemory(unsafe { numa_alloc_interleaved(size) }, size)
+	}
+
+	#[inline(always)]
+	pub fn allocate_local(size: size_t) -> NumaMemory
+	{
+		NumaMemory(unsafe { numa_alloc_local(size) }, size)
+	}
+
+	#[inline(always)]
+	pub fn allocate_on_node(size: size_t, node: NumaNode) -> NumaMemory
+	{
+		node.allocate(size)
 	}
 }
 
