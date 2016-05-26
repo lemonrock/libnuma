@@ -10,7 +10,7 @@ use ::libc::c_int;
 use ::libc::size_t;
 use ::libc::pid_t;
 use ::libc::c_void;
-use ::libc::c_char;
+//use ::libc::c_char;
 use super::nodemask_t;
 
 
@@ -36,47 +36,6 @@ impl Drop for bitmask
 		}
 		unsafe { numa_bitmask_free(self as *mut bitmask) }
 	}
-}
-
-extern "C"
-{
-	fn numa_allocate_nodemask() -> *mut bitmask;
-	fn numa_allocate_cpumask() -> *mut bitmask;
-	fn numa_get_interleave_mask() -> *mut bitmask;
-	fn numa_get_membind() -> *mut bitmask;
-	fn numa_get_mems_allowed() -> *mut bitmask;
-	fn numa_get_run_node_mask() -> *mut bitmask;
-	fn numa_bitmask_alloc(bmp: c_uint) -> *mut bitmask;
-	
-	fn numa_parse_nodestring(string: *const c_char) -> *mut bitmask;
-	fn numa_parse_cpustring(string: *const c_char) -> *mut bitmask;
-	fn numa_parse_nodestring_all(string: *const c_char) -> *mut bitmask;
-	fn numa_parse_cpustring_all(string: *const c_char) -> *mut bitmask;
-	
-	fn numa_bind(nodes: *mut bitmask);
-	fn numa_set_interleave_mask(nodemask: *mut bitmask);
-	fn numa_set_membind(nodemask: *mut bitmask);
-	fn numa_run_on_node_mask(mask: *mut bitmask) -> c_int;
-	fn numa_run_on_node_mask_all(mask: *mut bitmask) -> c_int;
-	fn numa_alloc_interleaved_subset(size: size_t, nodemask: *mut bitmask) -> *mut c_void;
-	fn numa_interleave_memory(mem: *mut c_void, size: size_t, mask: *mut bitmask);
-	fn numa_tonodemask_memory(mem: *mut c_void, size: size_t, mask: *mut bitmask);
-	fn numa_node_to_cpus(node: c_int, mask: *mut bitmask) -> c_int;
-	fn numa_migrate_pages(pid: c_int, from: *mut bitmask, to: *mut bitmask) -> c_int;
-	fn numa_sched_getaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
-	fn numa_sched_setaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
-	
-	fn numa_bitmask_clearall(bmp: *mut bitmask) -> *mut bitmask;
-	fn numa_bitmask_clearbit(bmp: *mut bitmask, n: c_uint) -> *mut bitmask;
-	fn numa_bitmask_equal(bmp1: *const bitmask, bmp2: *const bitmask) -> c_int;
-	fn numa_bitmask_free(bmp: *mut bitmask);
-	fn numa_bitmask_isbitset(bmp: *const bitmask, n: c_uint) -> c_int;
-	fn numa_bitmask_nbytes(bmp: *mut bitmask) -> c_uint;
-	fn numa_bitmask_setall(bmp: *mut bitmask) -> *mut bitmask;
-	fn numa_bitmask_setbit(bmp: *mut bitmask, n: c_uint) -> *mut bitmask;
-	fn copy_bitmask_to_nodemask(bmp: *mut bitmask, nodemask: *mut nodemask_t);
-	fn copy_bitmask_to_bitmask(bmpfrom: *mut bitmask, bmpto: *mut bitmask);
-	fn numa_bitmask_weight(bmp: *const bitmask) -> c_uint;
 }
 
 impl bitmask
@@ -331,4 +290,45 @@ impl bitmask
 	{
 		unsafe { numa_bitmask_weight(self as *const bitmask) as usize }
 	}
+}
+
+extern "C"
+{
+	fn numa_allocate_nodemask() -> *mut bitmask;
+	fn numa_allocate_cpumask() -> *mut bitmask;
+	fn numa_get_interleave_mask() -> *mut bitmask;
+	fn numa_get_membind() -> *mut bitmask;
+	fn numa_get_mems_allowed() -> *mut bitmask;
+	fn numa_get_run_node_mask() -> *mut bitmask;
+	fn numa_bitmask_alloc(bmp: c_uint) -> *mut bitmask;
+	
+//	fn numa_parse_nodestring(string: *const c_char) -> *mut bitmask;
+// 	fn numa_parse_cpustring(string: *const c_char) -> *mut bitmask;
+// 	fn numa_parse_nodestring_all(string: *const c_char) -> *mut bitmask;
+// 	fn numa_parse_cpustring_all(string: *const c_char) -> *mut bitmask;
+	
+	fn numa_bind(nodes: *mut bitmask);
+	fn numa_set_interleave_mask(nodemask: *mut bitmask);
+	fn numa_set_membind(nodemask: *mut bitmask);
+	fn numa_run_on_node_mask(mask: *mut bitmask) -> c_int;
+	fn numa_run_on_node_mask_all(mask: *mut bitmask) -> c_int;
+	fn numa_alloc_interleaved_subset(size: size_t, nodemask: *mut bitmask) -> *mut c_void;
+	fn numa_interleave_memory(mem: *mut c_void, size: size_t, mask: *mut bitmask);
+	fn numa_tonodemask_memory(mem: *mut c_void, size: size_t, mask: *mut bitmask);
+	fn numa_node_to_cpus(node: c_int, mask: *mut bitmask) -> c_int;
+	fn numa_migrate_pages(pid: c_int, from: *mut bitmask, to: *mut bitmask) -> c_int;
+	fn numa_sched_getaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
+	fn numa_sched_setaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
+	
+	fn numa_bitmask_clearall(bmp: *mut bitmask) -> *mut bitmask;
+	fn numa_bitmask_clearbit(bmp: *mut bitmask, n: c_uint) -> *mut bitmask;
+	fn numa_bitmask_equal(bmp1: *const bitmask, bmp2: *const bitmask) -> c_int;
+	fn numa_bitmask_free(bmp: *mut bitmask);
+	fn numa_bitmask_isbitset(bmp: *const bitmask, n: c_uint) -> c_int;
+	fn numa_bitmask_nbytes(bmp: *mut bitmask) -> c_uint;
+	fn numa_bitmask_setall(bmp: *mut bitmask) -> *mut bitmask;
+	fn numa_bitmask_setbit(bmp: *mut bitmask, n: c_uint) -> *mut bitmask;
+	fn copy_bitmask_to_nodemask(bmp: *mut bitmask, nodemask: *mut nodemask_t);
+	fn copy_bitmask_to_bitmask(bmpfrom: *mut bitmask, bmpto: *mut bitmask);
+	fn numa_bitmask_weight(bmp: *const bitmask) -> c_uint;
 }

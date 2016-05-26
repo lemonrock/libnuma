@@ -17,6 +17,10 @@ readme = "README.md"
 publish = true
 version = "0.0.1"
 
+[dependencies]
+bitflags = "^0.6"
+errno = "^0.1"
+
 [dependencies.libc]
 version = "0.2.11"
 

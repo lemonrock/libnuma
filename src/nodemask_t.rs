@@ -29,11 +29,13 @@ pub struct nodemask_t
 
 impl Clone for nodemask_t
 {
+	#[inline(always)]
 	fn clone(&self) -> Self { *self }
 }
 
 impl Default for nodemask_t
 {
+	#[inline(always)]
 	fn default() -> Self
 	{
 		unsafe { zeroed() }
@@ -42,6 +44,8 @@ impl Default for nodemask_t
 
 impl nodemask_t
 {
+	#[allow(trivial_casts)]
+	#[inline(always)]
 	pub fn copy_into_bitmask(&mut self, to: &mut bitmask)
 	{
 		unsafe { copy_nodemask_to_bitmask(self as *mut nodemask_t, to as *mut bitmask) }
