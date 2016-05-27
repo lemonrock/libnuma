@@ -12,14 +12,17 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ptr::null_mut;
 use std::ffi::CStr;
+use std::io::ErrorKind;
 use ::libc::c_char;
 use ::libc::c_int;
 use ::libc::c_void;
 use ::libc::size_t;
 use ::bitmask;
 use ::masks::Mask;
-use ::NumaMemory;
-use ::Memory;
+use ::memories::NumaMemory;
+use ::memories::Memory;
+use ::memories::MemoryPolicy;
+use ::memories::MovePagesFlags;
 use ::bits::Node;
 
 
@@ -110,7 +113,29 @@ impl Mask<Node> for NodeMask
 }
 
 impl NodeMask
-{	
+{
+	/// This operation is a touch expensive, as it clones an otherwise static value (otherwise a drop could occur that wiped out the static)
+	#[inline(always)]
+	pub fn all_nodes<'a>() -> NodeMask
+	{
+		NodeMask(unsafe { numa_all_nodes_ptr }).clone()
+	}
+
+	/// This operation is a touch expensive, as it clones an otherwise static value (otherwise a drop could occur that wiped out the static)
+	#[inline(always)]
+	pub fn no_nodes<'a>() -> NodeMask
+	{
+		NodeMask(unsafe { numa_no_nodes_ptr }).clone()
+	}
+
+	/// This operation is a touch expensive, as it clones an otherwise static value (otherwise a drop could occur that wiped out the static)
+	/// ?not in man pages?
+	// #[inline(always)]
+	// pub fn nodes<'a>() -> NodeMask
+	// {
+	// 	NodeMask(unsafe { numa_nodes_ptr }).clone()
+	// }
+	
 	#[inline(always)]
 	pub fn get_interleave_mask() -> NodeMask
 	{
@@ -164,10 +189,19 @@ impl NodeMask
 	{
 		unsafe { numa_migrate_pages(pid, self.0, to.0) }
 	}
+	
+	#[inline(always)]
+	pub fn bind<M: Memory>(&self, memory: M, mode: MemoryPolicy, flags: MovePagesFlags) -> Result<(), ErrorKind>
+	{
+		memory.bind(mode, &self, flags)
+	}
 }
 
 extern "C"
 {
+	static mut numa_all_nodes_ptr: *mut bitmask;
+	static mut numa_no_nodes_ptr: *mut bitmask;
+	//static mut numa_nodes_ptr: *mut bitmask;
 	fn numa_allocate_nodemask() -> *mut bitmask;
 	fn numa_parse_nodestring(string: *const c_char) -> *mut bitmask;
 	fn numa_parse_nodestring_all(string: *const c_char) -> *mut bitmask;

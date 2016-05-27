@@ -2,12 +2,9 @@
 // Copyright © 2016 The developers of libnuma-sys. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/lemonrock/libnuma-sys/master/COPYRIGHT.
 
 
-extern crate libc;
-
-
 bitflags!
 {
-	pub flags MemoryPolicyFlags: ::libc::c_int
+	pub flags MemoryPolicyFlags: ::libc::c_uint
 	{
 		/* Flags for get_mem_policy */
 		#[allow(dead_code)] const MPOL_F_NODE = 1 << 0,

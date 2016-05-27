@@ -2,19 +2,18 @@
 // Copyright © 2016 The developers of libnuma-sys. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/lemonrock/libnuma-sys/master/COPYRIGHT.
 
 
-extern crate libc;
-use self::libc::c_int;
-use self::libc::c_void;
-use self::libc::c_ulong;
-use self::libc::pid_t;
-use self::libc::E2BIG;
-use self::libc::EACCES;
-use self::libc::EFAULT;
-use self::libc::EINVAL;
-use self::libc::ENODEV;
-use self::libc::ENOENT;
-use self::libc::EPERM;
-use self::libc::ESRCH;
+use ::libc::c_int;
+use ::libc::c_void;
+use ::libc::c_ulong;
+use ::libc::pid_t;
+use ::libc::E2BIG;
+use ::libc::EACCES;
+use ::libc::EFAULT;
+use ::libc::EINVAL;
+use ::libc::ENODEV;
+use ::libc::ENOENT;
+use ::libc::EPERM;
+use ::libc::ESRCH;
 extern crate errno;
 use self::errno::errno;
 use std::io::ErrorKind;
@@ -22,7 +21,7 @@ use std::io::ErrorKind;
 
 bitflags!
 {
-	pub flags MovePagesFlags: ::libc::c_int
+	pub flags MovePagesFlags: ::libc::c_uint
 	{
 		#[allow(dead_code)] const MPOL_MF_STRICT = 1 << 0,
 		#[allow(dead_code)] const MPOL_MF_MOVE = 1 << 1,
@@ -41,7 +40,7 @@ impl MovePagesFlags
 		
 		let mut status: Vec<c_int> = vec![0 as c_int; count];
 		
-		match unsafe { numa_move_pages(pid as c_int, count as c_ulong, pages.as_mut_ptr(), nodes.as_ptr(), status.as_mut_ptr(), self.bits) }
+		match unsafe { numa_move_pages(pid as c_int, count as c_ulong, pages.as_mut_ptr(), nodes.as_ptr(), status.as_mut_ptr(), self.bits as c_int) }
 		{
 			0 => Ok(status),
 			-1 => match errno().0

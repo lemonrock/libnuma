@@ -13,3 +13,9 @@ pub use self::allocatableMemory::AllocatableMemory;
 
 mod reAllocatableMemory;
 pub use self::reAllocatableMemory::ReAllocatableMemory;
+
+mod memoryPolicy;
+pub use self::memoryPolicy::MemoryPolicy;
+
+mod movePagesFlags;
+pub use self::movePagesFlags::MovePagesFlags;

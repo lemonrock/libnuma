@@ -116,6 +116,13 @@ impl Mask<Cpu> for CpuMask
 
 impl CpuMask
 {
+	/// This operation is a touch expensive, as it clones an otherwise static value (otherwise a drop could occur that wiped out the static)
+	#[inline(always)]
+	pub fn all_cpus<'a>() -> CpuMask
+	{
+		CpuMask(unsafe { numa_all_cpus_ptr }).clone()
+	}
+	
 	#[inline(always)]
 	pub fn get_run_node_mask() -> CpuMask
 	{
@@ -215,6 +222,7 @@ impl CpuMask
 
 extern "C"
 {
+	static mut numa_all_cpus_ptr: *mut bitmask;
 	fn numa_allocate_cpumask() -> *mut bitmask;
 	fn numa_parse_cpustring(string: *const c_char) -> *mut bitmask;
 	fn numa_parse_cpustring_all(string: *const c_char) -> *mut bitmask;

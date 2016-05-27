@@ -2,19 +2,26 @@
 // Copyright © 2016 The developers of libnuma-sys. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/lemonrock/libnuma-sys/master/COPYRIGHT.
 
 
-extern crate libc;
-use self::libc::c_void;
-use self::libc::size_t;
-use self::libc::c_int;
+use std::io::ErrorKind;
+use std::ops::Deref;
+use ::libc::c_void;
+use ::libc::size_t;
+use ::libc::c_int;
+use ::libc::c_long;
+use ::libc::c_ulong;
+use ::libc::c_uint;
+use ::libc::EFAULT;
+use ::libc::EINVAL;
+use ::libc::EIO;
+use ::libc::ENOMEM;
+use ::libc::EPERM;
+extern crate errno;
+use self::errno::errno;
 use ::bits::Node;
+use ::memories::MemoryPolicy;
+use ::memories::MovePagesFlags;
+use ::masks::NodeMask;
 
-
-extern "C"
-{
-	fn numa_tonode_memory(start: *mut c_void, size: size_t, node: c_int);
-	fn numa_setlocal_memory(start: *mut c_void, size: size_t);
-	fn numa_police_memory(start: *mut c_void, size: size_t);
-}
 
 pub trait Memory
 {
@@ -47,4 +54,31 @@ pub trait Memory
 	{
 		unsafe { numa_police_memory(self.pointer(), self.size()) }
 	}
+	
+	fn bind(&self, mode: MemoryPolicy, nodes: &NodeMask, flags: MovePagesFlags) -> Result<(), ErrorKind>
+	{
+		let bitmask = nodes.deref();
+		match unsafe { mbind(self.pointer(), self.size() as c_ulong, mode as c_int, bitmask.maskp, bitmask.size, flags.bits()) }
+		{
+			0 => Ok(()),
+			-1 => match errno().0
+			{
+				EFAULT => panic!("Used an invalid address, an address not in this process or their was an unmapped hole in the length supplied"),
+				EINVAL => Err(ErrorKind::InvalidInput),
+				EIO => Err(ErrorKind::PermissionDenied),
+				ENOMEM => Err(ErrorKind::Other),
+				EPERM => Err(ErrorKind::PermissionDenied),
+				unexpected @ _ => panic!("Did not expect numa_move_pages to set errno {}", unexpected),
+			},
+			unexpected @ _ => panic!("Did not expect numa_move_pages to return {}", unexpected),
+		}
+	}
+}
+
+extern "C"
+{
+	fn numa_tonode_memory(start: *mut c_void, size: size_t, node: c_int);
+	fn numa_setlocal_memory(start: *mut c_void, size: size_t);
+	fn numa_police_memory(start: *mut c_void, size: size_t);
+	fn mbind(start: *mut c_void, len: c_ulong, mode: c_int, nmask: *const c_ulong, maxnode: c_ulong, flags: c_uint) -> c_long;
 }

@@ -30,12 +30,6 @@ pub use memories::*;
 pub use memoryPolicyFlags::MemoryPolicyFlags;
 mod memoryPolicyFlags;
 
-pub use memoryPolicy::MemoryPolicy;
-mod memoryPolicy;
-
-pub use movePagesFlags::MovePagesFlags;
-mod movePagesFlags;
-
 
 #[link(name = "numa")]
 extern "C"
@@ -84,6 +78,26 @@ pub fn set_bind_policy(is_strict: bool)
 	unsafe { numa_set_bind_policy(if is_strict { 1 } else { 0 }) }
 }
 
+pub fn will_exit_on_error() -> bool
+{
+	unsafe { numa_exit_on_error != 0 }
+}
+
+pub fn will_exit_on_warning() -> bool
+{
+	unsafe { numa_exit_on_warn != 0 }
+}
+
+pub fn exit_on_error(exit: bool)
+{
+	unsafe { numa_exit_on_error = if exit {1} else {0} }
+}
+
+pub fn exit_on_warning(exit: bool)
+{
+	unsafe { numa_exit_on_warn = if exit {1} else {0} }
+}
+
 extern "C"
 {
 	fn numa_available() -> c_int;
@@ -91,6 +105,9 @@ extern "C"
 	fn numa_set_localalloc();
 	fn numa_set_bind_policy(strict: c_int);
 	fn numa_set_strict(strict: c_int);
+	
+	static mut numa_exit_on_error: c_int;
+	static mut numa_exit_on_warn: c_int;
 	
 	// Not obviously useful; defined as weak symbols
 	// pub fn numa_error(_where: *mut c_char);
@@ -101,14 +118,8 @@ extern "C"
 	
 	
 		
-	pub static mut numa_all_nodes_ptr: *mut bitmask;
-	pub static mut numa_no_nodes_ptr: *mut bitmask;
-	pub static mut numa_nodes_ptr: *mut bitmask;
 	
-	pub static mut numa_all_cpus_ptr: *mut bitmask;
 	
-	pub static mut numa_exit_on_error: c_int;
-	pub static mut numa_exit_on_warn: c_int;
 	
 	pub fn get_mempolicy(policy: *mut c_int, nmask: *const c_ulong, maxnode: c_ulong, addr: *mut c_void, flags: c_int) -> c_long;
 	pub fn set_mempolicy(mode: c_int, nmask: *const c_ulong, maxnode: c_ulong) -> c_long;

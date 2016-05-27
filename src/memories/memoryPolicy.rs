@@ -2,16 +2,13 @@
 // Copyright © 2016 The developers of libnuma-sys. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/lemonrock/libnuma-sys/master/COPYRIGHT.
 
 
-extern crate libc;
-
-
-bitflags!
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Ord, PartialOrd)]
+#[repr(i32)]
+#[allow(non_camel_case_types)] 
+pub enum MemoryPolicy
 {
-	pub flags MemoryPolicy: ::libc::c_int
-	{
-		#[allow(dead_code)] const MPOL_DEFAULT = 0,
-		#[allow(dead_code)] const MPOL_PREFERRED = 1,
-		#[allow(dead_code)] const MPOL_BIND = 2,
-		#[allow(dead_code)] const MPOL_INTERLEAVE = 3,
-	}
+	MPOL_DEFAULT = 0,
+	MPOL_PREFERRED = 1,
+	MPOL_BIND = 2,
+	MPOL_INTERLEAVE = 3,
 }
