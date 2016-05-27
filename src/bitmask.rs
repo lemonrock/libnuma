@@ -75,7 +75,7 @@ impl bitmask
 	}
 
 	#[allow(trivial_casts)]
-	pub fn copy(&self) -> &bitmask
+	pub fn not_quite_clone(&self) -> &bitmask
 	{
 		let to = unsafe { numa_bitmask_alloc(self.size as c_uint) };
 		unsafe { copy_bitmask_to_bitmask(self as *const bitmask, to as *mut bitmask) }
@@ -145,11 +145,11 @@ extern "C"
 	fn numa_bitmask_equal(bmp1: *const bitmask, bmp2: *const bitmask) -> c_int;
 	fn numa_bitmask_free(bmp: *mut bitmask);
 	fn numa_bitmask_isbitset(bmp: *const bitmask, n: c_uint) -> c_int;
-	// NOTE: The first argument is actually "*mut" but we make it *const to support hash; the API implementation does not mutate bmpfrom
+	// NOTE: The first argument is actually "*mut" but we make it *const to support hash; the API implementation does not mutate bmp
 	fn numa_bitmask_nbytes(bmp: *const bitmask) -> c_uint;
 	fn numa_bitmask_setall(bmp: *mut bitmask) -> *mut bitmask;
 	fn numa_bitmask_setbit(bmp: *mut bitmask, n: c_uint) -> *mut bitmask;
-	// NOTE: The first argument is actually "*mut" but we make it *const to support clone; the API implementation does not mutate bmpfrom
+	// NOTE: The first argument is actually "*mut" but we make it *const to support not_quite_clone; the API implementation does not mutate bmpfrom
 	fn copy_bitmask_to_bitmask(bmpfrom: *const bitmask, bmpto: *mut bitmask);
 	fn numa_bitmask_weight(bmp: *const bitmask) -> c_uint;
 }

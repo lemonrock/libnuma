@@ -3,6 +3,11 @@
 
 
 use std::ops::Drop;
+use std::cmp::PartialEq;
+use std::cmp::Eq;
+use std::hash::Hash;
+use std::hash::Hasher;
+use std::clone::Clone;
 use std::ptr::null_mut;
 use std::ffi::CStr;
 use ::libc::c_char;
@@ -31,6 +36,35 @@ impl Drop for NodeMask
 		self.0 = null_mut()
 	}
 }
+
+impl PartialEq for NodeMask
+{
+	#[inline(always)]
+	fn eq(&self, other: &Self) -> bool
+	{
+		self.0.eq(&other.0)
+	}
+}
+
+impl Eq for NodeMask
+{
+}
+
+impl Hash for NodeMask
+{
+	fn hash<H: Hasher>(&self, state: &mut H)
+	{
+		self.0.hash(state)
+	}
+}
+
+// impl Clone for NodeMask
+// {
+// 	fn clone(&self) -> Self
+// 	{
+// 		NodeMask(self.0.not_quite_clone())
+// 	}
+// }
 
 impl NodeMask
 {
