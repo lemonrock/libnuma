@@ -3,18 +3,14 @@
 
 
 use std::ops::Drop;
+use std::cmp::PartialEq;
+use std::cmp::Eq;
+use std::hash::Hash;
+use std::hash::Hasher;
+use std::mem::size_of;
 use ::libc::c_ulong;
 use ::libc::c_uint;
 use ::libc::c_int;
-use ::libc::size_t;
-use ::libc::pid_t;
-use ::libc::c_void;
-use ::libc::c_char;
-use std::ptr::null_mut;
-use std::ffi::CStr;
-use super::nodemask_t;
-extern crate errno;
-use self::errno::errno;
 
 
 #[repr(C)]
@@ -41,127 +37,54 @@ impl Drop for bitmask
 	}
 }
 
+impl PartialEq for bitmask
+{
+	#[allow(trivial_casts)]
+	#[inline(always)]
+	fn eq(&self, other: &Self) -> bool
+	{
+		unsafe { numa_bitmask_equal(self, other as *const bitmask) == 1 }
+	}
+}
+
+impl Eq for bitmask
+{
+}
+
+impl Hash for bitmask
+{
+	fn hash<H: Hasher>(&self, state: &mut H)
+	{
+		let pointer = self.maskp;
+		for offset in 0 .. (self.number_of_bytes() / size_of::<c_ulong>()) as isize
+		{
+			unsafe { pointer.offset(offset) }.hash(state);
+		}
+	}
+}
+
 impl bitmask
 {
-	
-	
-	
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn get_interleave_mask<'a>() -> &'a mut bitmask
+	pub fn allocate<'a>(size: usize) -> &'a bitmask
 	{
-		let reference = unsafe { numa_get_interleave_mask().as_mut() };
-		reference.expect("Underlying libnuma API numa_get_interleave_mask failed")
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn allocate_nodemask<'a>() -> &'a mut bitmask
-	{
-		let reference = unsafe { numa_allocate_nodemask().as_mut() };
-		reference.expect("Underlying libnuma API numa_allocate_nodemask failed")
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn get_membind<'a>() -> &'a mut bitmask
-	{
-		let reference = unsafe { numa_get_membind().as_mut() };
-		reference.expect("Underlying libnuma API numa_get_membind failed")
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn get_mems_allowed<'a>() -> &'a mut bitmask
-	{
-		let reference = unsafe { numa_get_mems_allowed().as_mut() };
-		reference.expect("Underlying libnuma API numa_get_mems_allowed failed")
-	}
-	
-	#[cfg(not(feature = "use_std"))]
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn parse_node_string<'a>(string: &CStr) -> &'a mut bitmask
-	{
-		let reference = unsafe { numa_parse_nodestring(string.as_ptr()).as_mut() };
-		reference.expect("Underlying libnuma API numa_parse_nodestring failed")
+		let to = unsafe { numa_bitmask_alloc(size as c_uint) };
+		unsafe
+		{
+			&*to
+		}
 	}
 
-	#[cfg(not(feature = "use_std"))]
 	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn parse_node_string_all<'a>(string: &CStr) -> &'a mut bitmask
+	pub fn copy(&self) -> &bitmask
 	{
-		let reference = unsafe { numa_parse_nodestring_all(string.as_ptr()).as_mut() };
-		reference.expect("Underlying libnuma API numa_parse_nodestring failed")
+		let to = unsafe { numa_bitmask_alloc(self.size as c_uint) };
+		unsafe { copy_bitmask_to_bitmask(self as *const bitmask, to as *mut bitmask) }
+		unsafe
+		{
+			&*to
+		}
 	}
 	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn allocate<'a>(size: usize) -> &'a mut bitmask
-	{
-		let reference = unsafe { numa_bitmask_alloc(size as c_uint).as_mut() };
-		reference.expect("Underlying libnuma API numa_bitmask_alloc failed")
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn set_interleave_mask(&mut self)
-	{
-		unsafe { numa_set_interleave_mask(self as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn set_membind(&mut self)
-	{
-		unsafe { numa_set_membind(self as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn allocate_interleaved_subset(&mut self, size: size_t) -> *mut c_void
-	{
-		unsafe { numa_alloc_interleaved_subset(size, self as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn interleave_memory(&mut self, size: size_t, memory: *mut c_void)
-	{
-		unsafe { numa_interleave_memory(memory, size, self as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn to_nodemask_memory(&mut self, size: size_t, memory: *mut c_void)
-	{
-		unsafe { numa_tonodemask_memory(memory, size, self as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn migrate_pages(&mut self, pid: c_int, to: &mut bitmask) -> c_int
-	{
-		unsafe { numa_migrate_pages(pid, self as *mut bitmask, to as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn sched_getaffinity(&mut self, pid: pid_t) -> c_int
-	{
-		unsafe { numa_sched_getaffinity(pid, self as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn sched_setaffinity(&mut self, pid: pid_t) -> c_int
-	{
-		unsafe { numa_sched_setaffinity(pid, self as *mut bitmask) }
-	}
-	
-	#[allow(trivial_casts)]
 	#[inline(always)]
 	pub fn clear_all(&mut self) -> &mut Self
 	{
@@ -169,20 +92,11 @@ impl bitmask
 		self
 	}
 
-	#[allow(trivial_casts)]
 	#[inline(always)]
 	pub fn clear_bit(&mut self, bit: usize) -> &mut Self
 	{
 		unsafe { numa_bitmask_clearbit(self, bit as c_uint) };
 		self
-	}
-	
-	// make this into the PartialEq trait...
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn equal(&self, other: *const bitmask) -> bool
-	{
-		unsafe { numa_bitmask_equal(self, other) == 1 }
 	}
 
 	#[allow(trivial_casts)]
@@ -194,9 +108,9 @@ impl bitmask
 
 	#[allow(trivial_casts)]
 	#[inline(always)]
-	pub fn len(&mut self) -> c_uint
+	pub fn number_of_bytes(&self) -> usize
 	{
-		unsafe { numa_bitmask_nbytes(self as *mut bitmask) }
+		unsafe { numa_bitmask_nbytes(self as *const bitmask) as usize }
 	}
 
 	#[allow(trivial_casts)]
@@ -217,20 +131,6 @@ impl bitmask
 
 	#[allow(trivial_casts)]
 	#[inline(always)]
-	pub fn copy_into_nodemask(&mut self, nodemask: &mut nodemask_t)
-	{
-		unsafe { copy_bitmask_to_nodemask(self as *mut bitmask, nodemask as *mut nodemask_t) }
-	}
-
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn copy_into(&mut self, to: &mut bitmask)
-	{
-		unsafe { copy_bitmask_to_bitmask(self as *mut bitmask, to as *mut bitmask) }
-	}
-
-	#[allow(trivial_casts)]
-	#[inline(always)]
 	pub fn weight(&self) -> usize
 	{
 		unsafe { numa_bitmask_weight(self as *const bitmask) as usize }
@@ -239,33 +139,17 @@ impl bitmask
 
 extern "C"
 {
-	fn numa_allocate_nodemask() -> *mut bitmask;
-	fn numa_get_interleave_mask() -> *mut bitmask;
-	fn numa_get_membind() -> *mut bitmask;
-	fn numa_get_mems_allowed() -> *mut bitmask;
 	fn numa_bitmask_alloc(bmp: c_uint) -> *mut bitmask;
-	
-	fn numa_parse_nodestring(string: *const c_char) -> *mut bitmask;
-	fn numa_parse_nodestring_all(string: *const c_char) -> *mut bitmask;
-	
-	fn numa_set_interleave_mask(nodemask: *mut bitmask);
-	fn numa_set_membind(nodemask: *mut bitmask);
-	fn numa_alloc_interleaved_subset(size: size_t, nodemask: *mut bitmask) -> *mut c_void;
-	fn numa_interleave_memory(mem: *mut c_void, size: size_t, mask: *mut bitmask);
-	fn numa_tonodemask_memory(mem: *mut c_void, size: size_t, mask: *mut bitmask);
-	fn numa_migrate_pages(pid: c_int, from: *mut bitmask, to: *mut bitmask) -> c_int;
-	fn numa_sched_getaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
-	fn numa_sched_setaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
-	
 	fn numa_bitmask_clearall(bmp: *mut bitmask) -> *mut bitmask;
 	fn numa_bitmask_clearbit(bmp: *mut bitmask, n: c_uint) -> *mut bitmask;
 	fn numa_bitmask_equal(bmp1: *const bitmask, bmp2: *const bitmask) -> c_int;
 	fn numa_bitmask_free(bmp: *mut bitmask);
 	fn numa_bitmask_isbitset(bmp: *const bitmask, n: c_uint) -> c_int;
-	fn numa_bitmask_nbytes(bmp: *mut bitmask) -> c_uint;
+	// NOTE: The first argument is actually "*mut" but we make it *const to support hash; the API implementation does not mutate bmpfrom
+	fn numa_bitmask_nbytes(bmp: *const bitmask) -> c_uint;
 	fn numa_bitmask_setall(bmp: *mut bitmask) -> *mut bitmask;
 	fn numa_bitmask_setbit(bmp: *mut bitmask, n: c_uint) -> *mut bitmask;
-	fn copy_bitmask_to_nodemask(bmp: *mut bitmask, nodemask: *mut nodemask_t);
-	fn copy_bitmask_to_bitmask(bmpfrom: *mut bitmask, bmpto: *mut bitmask);
+	// NOTE: The first argument is actually "*mut" but we make it *const to support clone; the API implementation does not mutate bmpfrom
+	fn copy_bitmask_to_bitmask(bmpfrom: *const bitmask, bmpto: *mut bitmask);
 	fn numa_bitmask_weight(bmp: *const bitmask) -> c_uint;
 }

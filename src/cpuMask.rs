@@ -5,8 +5,15 @@
 use std::ops::Drop;
 use std::ptr::null_mut;
 use std::ffi::CStr;
+use std::result::Result;
+use std::io::ErrorKind;
 use ::libc::c_char;
 use ::libc::c_int;
+use ::libc::pid_t;
+use ::libc::EFAULT;
+use ::libc::EINVAL;
+use ::libc::EPERM;
+use ::libc::ESRCH;
 extern crate errno;
 use self::errno::errno;
 use super::bitmask;
@@ -74,6 +81,76 @@ impl CpuMask
 	{
 		unsafe { numa_bind(self.0) }
 	}
+	
+	pub fn sched_get_affinity_for_current_thread() -> Self
+	{
+		let mut all_nodes = Self::allocate();
+		let result = all_nodes.sched_get_affinity_for_task(0);
+		if result.is_err()
+		{
+			panic!("sched_get_affinity failed for current thread");
+		} 
+		all_nodes
+	}
+	
+	pub fn sched_set_affinity_for_current_thread(&mut self) -> bool
+	{
+		match self.sched_get_affinity_for_task(0)
+		{
+			Ok(_) => true,
+			Err(err) =>
+			{
+				match err
+				{
+					ErrorKind::Other => false,
+					ErrorKind::PermissionDenied | ErrorKind::NotFound => panic!("sched_get_affinity_for_task for self (task_id 0) should not produce an ErrorKind of {:?}", err),
+					_ => panic!("Unexpected ErrorKind {:?}", err),
+				}
+			}
+		}
+	}
+	
+	/// task_id is either thread id (tid) or process id (pid); the main thread in every process has the same id value as the process id
+	/// task_id 0 refers to self
+	/// thread id IS NOT the same as pthread_t, although thre struct pointed to be pthread_t in Bionic and Musl contains it as a field
+	/// Bionic makes this available via the non-portable pthread_gettid_np functions
+	/// On Glibc, one must execute a syscall for gettid
+	pub fn sched_get_affinity_for_task(&mut self, task_id: pid_t) -> Result<(), ErrorKind>
+	{
+		match unsafe { numa_sched_getaffinity(task_id, self.0) }
+		{
+			0 => Ok(()),
+			-1 => match errno().0
+			{
+				EFAULT => panic!("EFAULT for numa_sched_getaffinity"),
+				EINVAL => panic!("? no processors or mask too small ? Great. Can't distinguish. numa_sched_getaffinity. EINVAL."),
+				ESRCH => Err(ErrorKind::NotFound),
+				unexpected @ _ => panic!("Did not expect numa_move_pages to set errno {}", unexpected),
+			},
+			unexpected @ _ => panic!("Did not expect numa_sched_getaffinity to return {}", unexpected),
+		}
+	}
+	
+	/// task_id is either thread id (tid) or process id (pid); the main thread in every process has the same id value as the process id
+	/// thread id IS NOT the same as pthread_t, although thre struct pointed to be pthread_t in Bionic and Musl contains it as a field
+	/// Bionic makes this available via the non-portable pthread_gettid_np functions
+	/// On Glibc, one must execute a syscall for gettid
+	pub fn sched_set_affinity_for_task(&mut self, task_id: pid_t) -> Result<(), ErrorKind>
+	{
+		match unsafe { numa_sched_setaffinity(task_id, self.0) }
+		{
+			0 => Ok(()),
+			-1 => match errno().0
+			{
+				EFAULT => panic!("EFAULT for numa_sched_setaffinity"),
+				EINVAL => Err(ErrorKind::Other),
+				EPERM => Err(ErrorKind::PermissionDenied),
+				ESRCH => Err(ErrorKind::NotFound),
+				unexpected @ _ => panic!("Did not expect numa_move_pages to set errno {}", unexpected),
+			},
+			unexpected @ _ => panic!("Did not expect numa_sched_getaffinity to return {}", unexpected),
+		}
+	}
 }
 
 extern "C"
@@ -84,4 +161,6 @@ extern "C"
 	fn numa_parse_cpustring_all(string: *const c_char) -> *mut bitmask;
 	fn numa_run_on_node_mask(mask: *mut bitmask) -> c_int;
 	fn numa_bind(nodes: *mut bitmask);
+	fn numa_sched_getaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
+	fn numa_sched_setaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
 }

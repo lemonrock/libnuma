@@ -21,9 +21,8 @@ pub use _bitmask::bitmask;
 pub use cpuMask::CpuMask;
 mod cpuMask;
 
-pub use _nodemask_t::nodemask_t;
-pub use _nodemask_t::NUMA_NUM_NODES;
-#[path="nodemask_t.rs"] mod _nodemask_t;
+pub use nodeMask::NodeMask;
+mod nodeMask;
 
 pub use memoryPolicyFlags::MemoryPolicyFlags;
 mod memoryPolicyFlags;
@@ -116,13 +115,13 @@ extern "C"
 	
 	
 	
-	
+		
 	pub static mut numa_all_nodes_ptr: *mut bitmask;
-	pub static mut numa_nodes_ptr: *mut bitmask;
-	pub static mut numa_all_nodes: nodemask_t;
-	pub static mut numa_all_cpus_ptr: *mut bitmask;
 	pub static mut numa_no_nodes_ptr: *mut bitmask;
-	pub static mut numa_no_nodes: nodemask_t;
+	pub static mut numa_nodes_ptr: *mut bitmask;
+	
+	pub static mut numa_all_cpus_ptr: *mut bitmask;
+	
 	pub static mut numa_exit_on_error: c_int;
 	pub static mut numa_exit_on_warn: c_int;
 	
@@ -130,11 +129,4 @@ extern "C"
 	pub fn set_mempolicy(mode: c_int, nmask: *const c_ulong, maxnode: c_ulong) -> c_long;
 	pub fn mbind(start: *mut c_void, len: c_ulong, mode: c_int, nmask: *const c_ulong, maxnode: c_ulong, flags: c_uint) -> c_long;
 	pub fn migrate_pages(pid: c_int, maxnode: c_ulong, frommask: *const c_ulong, tomask: *const c_ulong) -> c_long;
-	
-	
-	
-	
-	
-	
-	
 }
