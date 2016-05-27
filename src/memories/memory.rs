@@ -55,10 +55,10 @@ pub trait Memory
 		unsafe { numa_police_memory(self.pointer(), self.size()) }
 	}
 	
-	fn bind(&self, mode: MemoryPolicy, nodes: &NodeMask, flags: MovePagesFlags) -> Result<(), ErrorKind>
+	fn bind(&self, nodes: &NodeMask, memory_policy: MemoryPolicy, flags: MovePagesFlags) -> Result<(), ErrorKind>
 	{
 		let bitmask = nodes.deref();
-		match unsafe { mbind(self.pointer(), self.size() as c_ulong, mode as c_int, bitmask.maskp, bitmask.size, flags.bits()) }
+		match unsafe { mbind(self.pointer(), self.size() as c_ulong, memory_policy as c_int, bitmask.maskp, bitmask.size, flags.bits()) }
 		{
 			0 => Ok(()),
 			-1 => match errno().0

@@ -13,17 +13,27 @@ use std::ops::DerefMut;
 use std::ptr::null_mut;
 use std::ffi::CStr;
 use std::io::ErrorKind;
+use ::libc::c_ulong;
+use ::libc::c_long;
 use ::libc::c_char;
 use ::libc::c_int;
 use ::libc::c_void;
 use ::libc::size_t;
+use ::libc::pid_t;
+use ::libc::EFAULT;
+use ::libc::EINVAL;
+use ::libc::EPERM;
+use ::libc::ESRCH;
+use ::libc::ENOMEM;
+extern crate errno;
+use self::errno::errno;
+use ::bits::Node;
 use ::bitmask;
 use ::masks::Mask;
 use ::memories::NumaMemory;
 use ::memories::Memory;
 use ::memories::MemoryPolicy;
 use ::memories::MovePagesFlags;
-use ::bits::Node;
 
 
 #[derive(Debug)]
@@ -185,15 +195,58 @@ impl NodeMask
 	}
 
 	#[inline(always)]
-	pub fn migrate_pages_to(&mut self, pid: c_int, to: &NodeMask) -> c_int
+	pub fn migrate_pages_to(&mut self, task_id: pid_t, to: &NodeMask) -> c_int
 	{
-		unsafe { numa_migrate_pages(pid, self.0, to.0) }
+		unsafe { numa_migrate_pages(task_id, self.0, to.0) }
 	}
 	
 	#[inline(always)]
-	pub fn bind<M: Memory>(&self, memory: M, mode: MemoryPolicy, flags: MovePagesFlags) -> Result<(), ErrorKind>
+	pub fn bind<M: Memory>(&self, memory: M, memory_policy: MemoryPolicy, flags: MovePagesFlags) -> Result<(), ErrorKind>
 	{
-		memory.bind(mode, &self, flags)
+		memory.bind(&self, memory_policy, flags)
+	}
+	
+	/// Returns number of pages that could not be moved; 0 is total success
+	pub fn migrate_pages(&self, task_id: pid_t, to: &NodeMask) -> Result<usize, ErrorKind>
+	{
+		let from_bitmask = &self.deref();
+		let to_bitmask = &to.deref();
+		
+		let maximum_node = from_bitmask.size;
+		
+		debug_assert!(maximum_node == to_bitmask.size, "NodeMask size differs, from {} vs to {}", maximum_node, to_bitmask.size);
+		
+		match unsafe { migrate_pages(task_id, maximum_node, from_bitmask.maskp, to_bitmask.maskp) }
+		{
+			-1 => match errno().0
+			{
+				EFAULT => panic!("Used an invalid address"),
+				EINVAL => Err(ErrorKind::InvalidInput),
+				EPERM => Err(ErrorKind::PermissionDenied),
+				ESRCH => Err(ErrorKind::NotFound),
+				unexpected @ _ => panic!("Did not expect migrate_pages to set errno {}", unexpected),
+			},
+			unexpected if unexpected < -1 => panic!("Did not expect migrate_pages to return {}", unexpected),
+			number_of_pages_that_could_not_be_moved => Ok(number_of_pages_that_could_not_be_moved as usize)
+		}
+	}
+	
+	pub fn set_memory_policy_of_current_thread(&self, memory_policy: MemoryPolicy) -> Result<(), ErrorKind>
+	{
+		let bitmask = &self.deref();
+		
+		match unsafe { set_mempolicy(memory_policy as c_int, bitmask.maskp, bitmask.size) }
+		{
+			0 => Ok(()),
+			-1 => match errno().0
+			{
+				EFAULT => panic!("Used an invalid address"),
+				EINVAL => Err(ErrorKind::InvalidInput),
+				ENOMEM => Err(ErrorKind::Other),
+				unexpected @ _ => panic!("Did not expect set_mempolicy to set errno {}", unexpected),
+			},
+			unexpected @ _ => panic!("Did not expect set_mempolicy to return {}", unexpected),
+		}
 	}
 }
 
@@ -214,4 +267,10 @@ extern "C"
 	fn numa_interleave_memory(mem: *mut c_void, size: size_t, mask: *mut bitmask);
 	fn numa_tonodemask_memory(mem: *mut c_void, size: size_t, mask: *mut bitmask);
 	fn numa_migrate_pages(pid: c_int, from: *mut bitmask, to: *mut bitmask) -> c_int;
+	fn migrate_pages(pid: c_int, maxnode: c_ulong, frommask: *const c_ulong, tomask: *const c_ulong) -> c_long;
+	fn set_mempolicy(mode: c_int, nmask: *const c_ulong, maxnode: c_ulong) -> c_long;
+	
+	// No wrapper implemented at this time as this call does several different things that have nothing to do with each other...
+	// See http://man7.org/linux/man-pages/man2/get_mempolicy.2.html
+	// fn get_mempolicy(policy: *mut c_int, nmask: *const c_ulong, maxnode: c_ulong, addr: *mut c_void, flags: c_int) -> c_long;
 }

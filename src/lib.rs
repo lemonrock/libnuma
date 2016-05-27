@@ -9,11 +9,8 @@
 
 #[macro_use] extern crate bitflags;
 extern crate libc;
-use libc::c_int;
-use libc::c_ulong;
-use libc::c_void;
 use libc::c_uint;
-use libc::c_long;
+use libc::c_int;
 
 #[path="bitmask.rs"] mod _bitmask;
 pub use _bitmask::bitmask;
@@ -37,7 +34,7 @@ extern "C"
 }
 
 
-pub const LIBNUMA_API_VERSION: c_int = 2;
+pub const LIBNUMA_API_VERSION: c_uint = 2;
 
 
 pub fn initialize() -> bool
@@ -112,17 +109,4 @@ extern "C"
 	// Not obviously useful; defined as weak symbols
 	// pub fn numa_error(_where: *mut c_char);
 	// pub fn numa_warn(num: c_int, fmt: *mut c_char, ...);
-	
-	
-	
-	
-	
-		
-	
-	
-	
-	pub fn get_mempolicy(policy: *mut c_int, nmask: *const c_ulong, maxnode: c_ulong, addr: *mut c_void, flags: c_int) -> c_long;
-	pub fn set_mempolicy(mode: c_int, nmask: *const c_ulong, maxnode: c_ulong) -> c_long;
-	pub fn mbind(start: *mut c_void, len: c_ulong, mode: c_int, nmask: *const c_ulong, maxnode: c_ulong, flags: c_uint) -> c_long;
-	pub fn migrate_pages(pid: c_int, maxnode: c_ulong, frommask: *const c_ulong, tomask: *const c_ulong) -> c_long;
 }
