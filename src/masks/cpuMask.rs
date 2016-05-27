@@ -159,8 +159,9 @@ impl CpuMask
 		} 
 		all_nodes
 	}
-	
-	pub fn sched_set_affinity_for_current_thread(&mut self) -> bool
+
+	/// Result is sizeof(cpumask_t)
+	pub fn sched_set_affinity_for_current_thread(&mut self) -> usize
 	{
 		match self.sched_get_affinity_for_task(0)
 		{
@@ -182,11 +183,12 @@ impl CpuMask
 	/// thread id IS NOT the same as pthread_t, although thre struct pointed to be pthread_t in Bionic and Musl contains it as a field
 	/// Bionic makes this available via the non-portable pthread_gettid_np functions
 	/// On Glibc, one must execute a syscall for gettid
-	pub fn sched_get_affinity_for_task(&mut self, task_id: pid_t) -> Result<(), ErrorKind>
+	/// Result is sizeof(cpumask_t)
+	pub fn sched_get_affinity_for_task(&mut self, task_id: pid_t) -> Result<(usize), ErrorKind>
 	{
 		match unsafe { numa_sched_getaffinity(task_id, self.0) }
 		{
-			0 => Ok(()),
+			size_of_cpumask_t if size_of_cpumask_t >= 0 => Ok(size_of_cpumask_t),
 			-1 => match errno().0
 			{
 				EFAULT => panic!("EFAULT for numa_sched_getaffinity"),
@@ -229,6 +231,6 @@ extern "C"
 	fn numa_get_run_node_mask() -> *mut bitmask;
 	fn numa_run_on_node_mask(mask: *mut bitmask) -> c_int;
 	fn numa_bind(nodes: *mut bitmask);
-	fn numa_sched_getaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
+	fn numa_sched_getaffinity(pid: pid_t, mask: *mut bitmask) -> c_int; // result is NOT as documented in manpages...
 	fn numa_sched_setaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;
 }
