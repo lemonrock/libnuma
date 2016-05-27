@@ -114,5 +114,5 @@ extern "C"
 #[test]
 fn check_binding()
 {
-	CpuMask::all_cpus().sched_get_affinity_for_task().unwrap();
+	CpuMask::all_cpus().sched_get_affinity_for_current_thread();
 }
