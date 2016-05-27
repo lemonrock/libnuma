@@ -19,6 +19,7 @@ use std::mem::uninitialized;
 use super::NumaMemory;
 use super::CpuMask;
 use super::bitmask;
+use mask::Mask;
 
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]

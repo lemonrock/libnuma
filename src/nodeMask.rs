@@ -15,6 +15,7 @@ use ::libc::c_int;
 use ::libc::c_void;
 use ::libc::size_t;
 use super::bitmask;
+use super::Mask;
 use super::NumaMemory;
 use super::Memory;
 
@@ -66,7 +67,7 @@ impl Clone for NodeMask
 	}
 }
 
-impl NodeMask
+impl Mask for NodeMask
 {
 	#[inline(always)]
 	fn as_ref_bitmask(&self) -> &bitmask
@@ -75,11 +76,26 @@ impl NodeMask
 	}
 	
 	#[inline(always)]
-	pub fn allocate() -> NodeMask
+	fn allocate() -> NodeMask
 	{
 		NodeMask(unsafe { numa_allocate_nodemask() })
 	}
 	
+	#[inline(always)]
+	fn parse_string(string: &CStr) -> NodeMask
+	{
+		NodeMask(unsafe { numa_parse_nodestring(string.as_ptr()) })
+	}
+
+	#[inline(always)]
+	fn parse_string_all(string: &CStr) -> NodeMask
+	{
+		NodeMask(unsafe { numa_parse_nodestring_all(string.as_ptr()) })
+	}
+}
+
+impl NodeMask
+{	
 	#[inline(always)]
 	pub fn get_interleave_mask() -> NodeMask
 	{
@@ -96,18 +112,6 @@ impl NodeMask
 	pub fn get_mems_allowed() -> NodeMask
 	{
 		NodeMask(unsafe { numa_get_mems_allowed() })
-	}
-	
-	#[inline(always)]
-	pub fn parse_node_string(string: &CStr) -> NodeMask
-	{
-		NodeMask(unsafe { numa_parse_nodestring(string.as_ptr()) })
-	}
-
-	#[inline(always)]
-	pub fn parse_node_string_all(string: &CStr) -> NodeMask
-	{
-		NodeMask(unsafe { numa_parse_nodestring_all(string.as_ptr()) })
 	}
 	
 	#[inline(always)]
@@ -150,13 +154,11 @@ impl NodeMask
 extern "C"
 {
 	fn numa_allocate_nodemask() -> *mut bitmask;
+	fn numa_parse_nodestring(string: *const c_char) -> *mut bitmask;
+	fn numa_parse_nodestring_all(string: *const c_char) -> *mut bitmask;
 	fn numa_get_interleave_mask() -> *mut bitmask;
 	fn numa_get_membind() -> *mut bitmask;
 	fn numa_get_mems_allowed() -> *mut bitmask;
-	
-	fn numa_parse_nodestring(string: *const c_char) -> *mut bitmask;
-	fn numa_parse_nodestring_all(string: *const c_char) -> *mut bitmask;
-	
 	fn numa_set_interleave_mask(nodemask: *mut bitmask);
 	fn numa_set_membind(nodemask: *mut bitmask);
 	fn numa_alloc_interleaved_subset(size: size_t, nodemask: *mut bitmask) -> *mut c_void;

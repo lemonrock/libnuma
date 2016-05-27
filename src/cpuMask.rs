@@ -22,6 +22,7 @@ use ::libc::ESRCH;
 extern crate errno;
 use self::errno::errno;
 use super::bitmask;
+use super::Mask;
 
 
 #[derive(Debug)]
@@ -71,7 +72,7 @@ impl Clone for CpuMask
 	}
 }
 
-impl CpuMask
+impl Mask for CpuMask
 {
 	#[inline(always)]
 	fn as_ref_bitmask(&self) -> &bitmask
@@ -80,27 +81,30 @@ impl CpuMask
 	}
 	
 	#[inline(always)]
-	pub fn allocate() -> CpuMask
+	fn allocate() -> CpuMask
 	{
 		CpuMask(unsafe { numa_allocate_cpumask() })
 	}
 	
 	#[inline(always)]
-	pub fn get_run_node_mask() -> CpuMask
-	{
-		CpuMask(unsafe { numa_get_run_node_mask() })
-	}
-	
-	#[inline(always)]
-	pub fn parse_cpu_string(string: &CStr) -> CpuMask
+	fn parse_string(string: &CStr) -> CpuMask
 	{
 		CpuMask(unsafe { numa_parse_cpustring(string.as_ptr()) })
 	}
 	
 	#[inline(always)]
-	pub fn parse_cpu_string_all(string: &CStr) -> CpuMask
+	fn parse_string_all(string: &CStr) -> CpuMask
 	{
 		CpuMask(unsafe { numa_parse_cpustring_all(string.as_ptr()) })
+	}
+}
+
+impl CpuMask
+{
+	#[inline(always)]
+	pub fn get_run_node_mask() -> CpuMask
+	{
+		CpuMask(unsafe { numa_get_run_node_mask() })
 	}
 	
 	#[inline(always)]
@@ -197,9 +201,9 @@ impl CpuMask
 extern "C"
 {
 	fn numa_allocate_cpumask() -> *mut bitmask;
-	fn numa_get_run_node_mask() -> *mut bitmask;
 	fn numa_parse_cpustring(string: *const c_char) -> *mut bitmask;
 	fn numa_parse_cpustring_all(string: *const c_char) -> *mut bitmask;
+	fn numa_get_run_node_mask() -> *mut bitmask;
 	fn numa_run_on_node_mask(mask: *mut bitmask) -> c_int;
 	fn numa_bind(nodes: *mut bitmask);
 	fn numa_sched_getaffinity(pid: pid_t, mask: *mut bitmask) -> c_int;

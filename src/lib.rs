@@ -18,6 +18,9 @@ use libc::c_long;
 pub use _bitmask::bitmask;
 #[path="bitmask.rs"] mod _bitmask;
 
+pub use mask::Mask;
+mod mask;
+
 pub use cpuMask::CpuMask;
 mod cpuMask;
 
