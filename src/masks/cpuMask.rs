@@ -159,24 +159,6 @@ impl CpuMask
 		} 
 		all_nodes
 	}
-
-	/// Result is sizeof(cpumask_t)
-	pub fn sched_set_affinity_for_current_thread(&mut self) -> usize
-	{
-		match self.sched_get_affinity_for_task(0)
-		{
-			Ok(_) => true,
-			Err(err) =>
-			{
-				match err
-				{
-					ErrorKind::Other => false,
-					ErrorKind::PermissionDenied | ErrorKind::NotFound => panic!("sched_get_affinity_for_task for self (task_id 0) should not produce an ErrorKind of {:?}", err),
-					_ => panic!("Unexpected ErrorKind {:?}", err),
-				}
-			}
-		}
-	}
 	
 	/// task_id is either thread id (tid) or process id (pid); the main thread in every process has the same id value as the process id
 	/// task_id 0 refers to self
@@ -188,7 +170,7 @@ impl CpuMask
 	{
 		match unsafe { numa_sched_getaffinity(task_id, self.0) }
 		{
-			size_of_cpumask_t if size_of_cpumask_t >= 0 => Ok(size_of_cpumask_t),
+			size_of_cpumask_t if size_of_cpumask_t >= 0 => Ok(size_of_cpumask_t as usize),
 			-1 => match errno().0
 			{
 				EFAULT => panic!("EFAULT for numa_sched_getaffinity"),
@@ -197,6 +179,23 @@ impl CpuMask
 				unexpected @ _ => panic!("Did not expect numa_move_pages to set errno {}", unexpected),
 			},
 			unexpected @ _ => panic!("Did not expect numa_sched_getaffinity to return {}", unexpected),
+		}
+	}
+	
+	pub fn sched_set_affinity_for_current_thread(&mut self) -> bool
+	{
+		match self.sched_set_affinity_for_task(0)
+		{
+			Ok(_) => true,
+			Err(err) =>
+			{
+				match err
+				{
+					ErrorKind::Other => false,
+					ErrorKind::PermissionDenied | ErrorKind::NotFound => panic!("sched_get_affinity_for_task for self (task_id 0) should not produce an ErrorKind of {:?}", err),
+					_ => panic!("Unexpected ErrorKind {:?}", err),
+				}
+			}
 		}
 	}
 	
