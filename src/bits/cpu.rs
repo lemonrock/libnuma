@@ -9,8 +9,8 @@ use self::libc::c_uint;
 use self::libc::EINVAL;
 extern crate errno;
 use self::errno::errno;
-use super::Node;
-use super::Bit;
+use ::bits::Node;
+use ::bits::Bit;
 
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]

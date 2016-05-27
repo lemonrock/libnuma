@@ -5,14 +5,14 @@
 extern crate libc;
 use self::libc::c_void;
 use self::libc::size_t;
-use super::Node;
-use super::Memory;
-use super::AllocatableMemory;
-use super::ReAllocatableMemory;
 use std::ops::Drop;
 use std::ptr::null_mut;
 use std::result::Result;
 use std::io::Error;
+use ::memories::Memory;
+use ::memories::AllocatableMemory;
+use ::memories::ReAllocatableMemory;
+use ::bits::Node;
 
 
 #[derive(Debug)]

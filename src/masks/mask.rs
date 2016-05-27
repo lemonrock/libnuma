@@ -11,8 +11,8 @@ use std::clone::Clone;
 use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ffi::CStr;
-use super::bitmask;
-use super::Bit;
+use ::bitmask;
+use ::bits::Bit;
 
 
 pub trait Mask<B: Bit> : Hash + Eq + PartialEq + Drop + Debug + Clone + Deref<Target=bitmask> + DerefMut
@@ -61,8 +61,8 @@ pub trait Mask<B: Bit> : Hash + Eq + PartialEq + Drop + Debug + Clone + Deref<Ta
 	}
 
 	#[inline(always)]
-	fn weight(&self) -> usize
+	fn weight_x(&self) -> usize
 	{
-		(*self).weight()
+		self.deref().weight()
 	}
 }

@@ -6,7 +6,7 @@ extern crate libc;
 use self::libc::c_void;
 use self::libc::size_t;
 use self::libc::c_int;
-use super::Node;
+use ::bits::Node;
 
 
 extern "C"

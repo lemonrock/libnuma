@@ -2,16 +2,14 @@
 // Copyright © 2016 The developers of libnuma-sys. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/lemonrock/libnuma-sys/master/COPYRIGHT.
 
 
-extern crate libc;
-use self::libc::size_t;
-use std::ops::Drop;
-use super::Memory;
-use std::result::Result;
-use std::io::Error;
+mod memory;
+pub use self::memory::Memory;
 
+mod numaMemory;
+pub use self::numaMemory::NumaMemory;
 
-pub trait ReAllocatableMemory : Memory + Drop
-{
-	#[inline(always)]
-	fn reallocate(&mut self, new_size: size_t) -> Result<(), Error>;
-}
+mod allocatableMemory;
+pub use self::allocatableMemory::AllocatableMemory;
+
+mod reAllocatableMemory;
+pub use self::reAllocatableMemory::ReAllocatableMemory;

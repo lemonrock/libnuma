@@ -16,11 +16,11 @@ use ::libc::c_char;
 use ::libc::c_int;
 use ::libc::c_void;
 use ::libc::size_t;
-use super::bitmask;
-use super::Mask;
-use super::NumaMemory;
-use super::Memory;
-use super::Node;
+use ::bitmask;
+use ::masks::Mask;
+use ::NumaMemory;
+use ::Memory;
+use ::bits::Node;
 
 
 #[derive(Debug)]
@@ -58,7 +58,7 @@ impl Hash for NodeMask
 {
 	fn hash<H: Hasher>(&self, state: &mut H)
 	{
-		(*self).hash(state)
+		self.deref().hash(state)
 	}
 }
 

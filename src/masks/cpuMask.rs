@@ -23,9 +23,9 @@ use ::libc::EPERM;
 use ::libc::ESRCH;
 extern crate errno;
 use self::errno::errno;
-use super::bitmask;
-use super::Mask;
-use super::Cpu;
+use ::bitmask;
+use ::masks::Mask;
+use ::bits::Cpu;
 
 
 #[derive(Debug)]
@@ -63,7 +63,7 @@ impl Hash for CpuMask
 {
 	fn hash<H: Hasher>(&self, state: &mut H)
 	{
-		(*self).hash(state)
+		self.deref().hash(state)
 	}
 }
 

@@ -17,11 +17,11 @@ extern crate errno;
 use self::errno::errno;
 use std::default::Default;
 use std::mem::uninitialized;
-use super::NumaMemory;
-use super::CpuMask;
-use super::bitmask;
-use super::Mask;
-use super::Bit;
+use ::NumaMemory;
+use ::bitmask;
+use ::masks::Mask;
+use ::masks::CpuMask;
+use ::bits::Bit;
 
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]

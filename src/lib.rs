@@ -15,17 +15,17 @@ use libc::c_void;
 use libc::c_uint;
 use libc::c_long;
 
-pub use _bitmask::bitmask;
 #[path="bitmask.rs"] mod _bitmask;
+pub use _bitmask::bitmask;
 
-pub use mask::Mask;
-mod mask;
+mod masks;
+pub use masks::*;
 
-pub use cpuMask::CpuMask;
-mod cpuMask;
+mod bits;
+pub use bits::*;
 
-pub use nodeMask::NodeMask;
-mod nodeMask;
+mod memories;
+pub use memories::*;
 
 pub use memoryPolicyFlags::MemoryPolicyFlags;
 mod memoryPolicyFlags;
@@ -35,27 +35,6 @@ mod memoryPolicy;
 
 pub use movePagesFlags::MovePagesFlags;
 mod movePagesFlags;
-
-pub use node::Node;
-mod node;
-
-pub use bit::Bit;
-mod bit;
-
-pub use cpu::Cpu;
-mod cpu;
-
-pub use memory::Memory;
-mod memory;
-
-pub use allocatableMemory::AllocatableMemory;
-mod allocatableMemory;
-
-pub use reAllocatableMemory::ReAllocatableMemory;
-mod reAllocatableMemory;
-
-pub use numaMemory::NumaMemory;
-mod numaMemory;
 
 
 #[link(name = "numa")]

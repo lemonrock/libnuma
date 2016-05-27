@@ -5,11 +5,13 @@
 extern crate libc;
 use self::libc::size_t;
 use std::ops::Drop;
-use super::Memory;
+use std::result::Result;
+use std::io::Error;
+use ::memories::Memory;
 
 
-pub trait AllocatableMemory : Memory + Drop
+pub trait ReAllocatableMemory : Memory + Drop
 {
 	#[inline(always)]
-	fn allocate(size: size_t) -> Self;
+	fn reallocate(&mut self, new_size: size_t) -> Result<(), Error>;
 }
