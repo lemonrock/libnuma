@@ -2,7 +2,7 @@
 // Copyright © 2016 The developers of libnuma-sys. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/lemonrock/libnuma-sys/master/COPYRIGHT.
 
 
-//#![cfg(target_os = "linux")]
+#![cfg(target_os = "linux")]
 #![feature(unsafe_no_drop_flag)]
 #![feature(const_fn)]
 
@@ -109,4 +109,10 @@ extern "C"
 	// Not obviously useful; defined as weak symbols
 	// pub fn numa_error(_where: *mut c_char);
 	// pub fn numa_warn(num: c_int, fmt: *mut c_char, ...);
+}
+
+#[test]
+fn check_binding()
+{
+	CpuMask::all_cpus().sched_get_affinity_for_task().unwrap();
 }
