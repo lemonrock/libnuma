@@ -2,23 +2,34 @@
 // Copyright © 2016 The developers of libnuma-sys. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/lemonrock/libnuma-sys/master/COPYRIGHT.
 
 
+use std::default::Default;
 extern crate libc;
 use self::libc::c_int;
+use self::libc::c_uint;
 use self::libc::EINVAL;
-use std::default::Default;
-use super::NumaNode;
 extern crate errno;
 use self::errno::errno;
+use super::Node;
+use super::Bit;
 
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Cpu(c_int);
+
+impl Bit for Cpu
+{
+	#[inline(always)]
+	fn to_c_uint(&self) -> c_uint
+	{
+		self.0 as c_uint
+	}
+}
 
 impl Cpu
 {
 	/// length, size, count
 	/// Kernel limit on number of cpus - same as NR_CPUS
-	/// Equivalent concept to NumaNode::number_of_nodes_in_nodemask()
+	/// Equivalent concept to Node::number_of_nodes_in_nodemask()
 	pub fn number_of_possible_cpus() -> usize
 	{
 		match unsafe { numa_num_possible_cpus() }
@@ -51,8 +62,8 @@ impl Cpu
 		}
 	}
 	
-	/// Returns None if the cpu has no NumaNode. This is because the CPU does not exist or is not online
-	pub fn node_for_cpu(&self) -> Option<NumaNode>
+	/// Returns None if the cpu has no Node. This is because the CPU does not exist or is not online
+	pub fn node_for_cpu(&self) -> Option<Node>
 	{
 		match unsafe { numa_node_of_cpu(self.0) }
 		{
@@ -62,7 +73,7 @@ impl Cpu
 				unexpected @ _ => panic!("numa_node_for_cpu set an unexpected errno {}", unexpected),
 			},
 			x if x.is_negative() => panic!("numa_num_possible_cpus returned a negative value {}", x),
-			value @ _ => Some(NumaNode::new(value))
+			value @ _ => Some(Node::new(value))
 		}
 	}
 }

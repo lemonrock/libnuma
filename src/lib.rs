@@ -36,8 +36,11 @@ mod memoryPolicy;
 pub use movePagesFlags::MovePagesFlags;
 mod movePagesFlags;
 
-pub use numaNode::NumaNode;
-mod numaNode;
+pub use node::Node;
+mod node;
+
+pub use bit::Bit;
+mod bit;
 
 pub use cpu::Cpu;
 mod cpu;

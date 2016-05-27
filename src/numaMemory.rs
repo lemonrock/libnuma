@@ -5,7 +5,7 @@
 extern crate libc;
 use self::libc::c_void;
 use self::libc::size_t;
-use super::NumaNode;
+use super::Node;
 use super::Memory;
 use super::AllocatableMemory;
 use super::ReAllocatableMemory;
@@ -94,7 +94,7 @@ impl NumaMemory
 	}
 
 	#[inline(always)]
-	pub fn allocate_on_node(size: size_t, node: NumaNode) -> NumaMemory
+	pub fn allocate_on_node(size: size_t, node: Node) -> NumaMemory
 	{
 		node.allocate(size)
 	}

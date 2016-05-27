@@ -6,7 +6,7 @@ extern crate libc;
 use self::libc::c_void;
 use self::libc::size_t;
 use self::libc::c_int;
-use super::NumaNode;
+use super::Node;
 
 
 extern "C"
@@ -31,7 +31,7 @@ pub trait Memory
 	}
 	
 	#[inline(always)]
-	fn to_node(&self, node: NumaNode)
+	fn to_node(&self, node: Node)
 	{
 		unsafe { numa_tonode_memory(self.pointer(), self.size(), node.0) }
 	}

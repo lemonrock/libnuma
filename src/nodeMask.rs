@@ -8,6 +8,8 @@ use std::cmp::Eq;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::clone::Clone;
+use std::ops::Deref;
+use std::ops::DerefMut;
 use std::ptr::null_mut;
 use std::ffi::CStr;
 use ::libc::c_char;
@@ -18,6 +20,7 @@ use super::bitmask;
 use super::Mask;
 use super::NumaMemory;
 use super::Memory;
+use super::Node;
 
 
 #[derive(Debug)]
@@ -55,7 +58,7 @@ impl Hash for NodeMask
 {
 	fn hash<H: Hasher>(&self, state: &mut H)
 	{
-		self.as_ref_bitmask().hash(state)
+		(*self).hash(state)
 	}
 }
 
@@ -63,18 +66,30 @@ impl Clone for NodeMask
 {
 	fn clone(&self) -> Self
 	{
-		NodeMask(self.as_ref_bitmask().internal_clone())
+		NodeMask((*self).internal_clone())
 	}
 }
 
-impl Mask for NodeMask
+impl Deref for NodeMask
 {
-	#[inline(always)]
-	fn as_ref_bitmask(&self) -> &bitmask
+	type Target = bitmask;
+
+	fn deref(&self) -> &bitmask
 	{
 		unsafe { &*self.0 }
 	}
-	
+}
+
+impl DerefMut for NodeMask
+{
+	fn deref_mut(&mut self) -> &mut bitmask
+	{
+		unsafe { self.0.as_mut().unwrap() }
+	}
+}
+
+impl Mask<Node> for NodeMask
+{
 	#[inline(always)]
 	fn allocate() -> NodeMask
 	{

@@ -94,36 +94,29 @@ impl bitmask
 	}
 	
 	#[inline(always)]
-	pub fn clear_all(&mut self) -> &mut Self
+	pub fn clear_all_bits(&mut self) -> &mut Self
 	{
 		unsafe { numa_bitmask_clearall(self) };
 		self
 	}
 
 	#[inline(always)]
-	pub fn clear_bit(&mut self, bit: usize) -> &mut Self
+	pub fn clear_bit(&mut self, bit: c_uint) -> &mut Self
 	{
-		unsafe { numa_bitmask_clearbit(self, bit as c_uint) };
+		unsafe { numa_bitmask_clearbit(self, bit) };
 		self
 	}
 
 	#[allow(trivial_casts)]
 	#[inline(always)]
-	pub fn is_bit_set(&self, bit: usize) -> bool
+	pub fn is_bit_set(&self, bit: c_uint) -> bool
 	{
-		unsafe { numa_bitmask_isbitset(self as *const bitmask, bit as c_uint) != 0 }
+		unsafe { numa_bitmask_isbitset(self as *const bitmask, bit) != 0 }
 	}
 
 	#[allow(trivial_casts)]
 	#[inline(always)]
-	pub fn number_of_bytes(&self) -> usize
-	{
-		unsafe { numa_bitmask_nbytes(self as *const bitmask) as usize }
-	}
-
-	#[allow(trivial_casts)]
-	#[inline(always)]
-	pub fn set_all(&mut self) -> &mut Self
+	pub fn set_all_bits(&mut self) -> &mut Self
 	{
 		unsafe { numa_bitmask_setall(self as *mut bitmask) };
 		self
@@ -131,9 +124,9 @@ impl bitmask
 
 	#[allow(trivial_casts)]
 	#[inline(always)]
-	pub fn set_bit(&mut self, bit: usize) -> &mut Self
+	pub fn set_bit(&mut self, bit: c_uint) -> &mut Self
 	{
-		unsafe { numa_bitmask_setbit(self as *mut bitmask, bit as c_uint) };
+		unsafe { numa_bitmask_setbit(self as *mut bitmask, bit) };
 		self
 	}
 
@@ -142,6 +135,13 @@ impl bitmask
 	pub fn weight(&self) -> usize
 	{
 		unsafe { numa_bitmask_weight(self as *const bitmask) as usize }
+	}
+
+	#[allow(trivial_casts)]
+	#[inline(always)]
+	pub fn number_of_bytes(&self) -> usize
+	{
+		unsafe { numa_bitmask_nbytes(self as *const bitmask) as usize }
 	}
 }
 
@@ -154,10 +154,10 @@ extern "C"
 	fn numa_bitmask_free(bmp: *mut bitmask);
 	fn numa_bitmask_isbitset(bmp: *const bitmask, n: c_uint) -> c_int;
 	// NOTE: The first argument is actually "*mut" but we make it *const to support hash; the API implementation does not mutate bmp
-	fn numa_bitmask_nbytes(bmp: *const bitmask) -> c_uint;
 	fn numa_bitmask_setall(bmp: *mut bitmask) -> *mut bitmask;
 	fn numa_bitmask_setbit(bmp: *mut bitmask, n: c_uint) -> *mut bitmask;
 	// NOTE: The first argument is actually "*mut" but we make it *const to support not_quite_clone; the API implementation does not mutate bmpfrom
 	fn copy_bitmask_to_bitmask(bmpfrom: *const bitmask, bmpto: *mut bitmask);
 	fn numa_bitmask_weight(bmp: *const bitmask) -> c_uint;
+	fn numa_bitmask_nbytes(bmp: *const bitmask) -> c_uint;
 }

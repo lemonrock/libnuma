@@ -8,6 +8,8 @@ use std::cmp::Eq;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::clone::Clone;
+use std::ops::Deref;
+use std::ops::DerefMut;
 use std::ptr::null_mut;
 use std::ffi::CStr;
 use std::result::Result;
@@ -23,6 +25,7 @@ extern crate errno;
 use self::errno::errno;
 use super::bitmask;
 use super::Mask;
+use super::Cpu;
 
 
 #[derive(Debug)]
@@ -60,7 +63,7 @@ impl Hash for CpuMask
 {
 	fn hash<H: Hasher>(&self, state: &mut H)
 	{
-		self.as_ref_bitmask().hash(state)
+		(*self).hash(state)
 	}
 }
 
@@ -68,18 +71,30 @@ impl Clone for CpuMask
 {
 	fn clone(&self) -> Self
 	{
-		CpuMask(self.as_ref_bitmask().internal_clone())
+		CpuMask((*self).internal_clone())
 	}
 }
 
-impl Mask for CpuMask
+impl Deref for CpuMask
 {
-	#[inline(always)]
-	fn as_ref_bitmask(&self) -> &bitmask
+	type Target = bitmask;
+
+	fn deref(&self) -> &bitmask
 	{
 		unsafe { &*self.0 }
 	}
-	
+}
+
+impl DerefMut for CpuMask
+{
+	fn deref_mut(&mut self) -> &mut bitmask
+	{
+		unsafe { self.0.as_mut().unwrap() }
+	}
+}
+
+impl Mask<Cpu> for CpuMask
+{
 	#[inline(always)]
 	fn allocate() -> CpuMask
 	{

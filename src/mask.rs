@@ -8,15 +8,15 @@ use std::cmp::Eq;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::clone::Clone;
+use std::ops::Deref;
+use std::ops::DerefMut;
 use std::ffi::CStr;
 use super::bitmask;
+use super::Bit;
 
 
-pub trait Mask : Hash + Eq + PartialEq + Drop + Debug + Clone
+pub trait Mask<B: Bit> : Hash + Eq + PartialEq + Drop + Debug + Clone + Deref<Target=bitmask> + DerefMut
 {
-	#[inline(always)]
-	fn as_ref_bitmask(&self) -> &bitmask;
-	
 	#[inline(always)]
 	fn allocate() -> Self;
 	
@@ -25,4 +25,44 @@ pub trait Mask : Hash + Eq + PartialEq + Drop + Debug + Clone
 	
 	#[inline(always)]
 	fn parse_string_all(string: &CStr) -> Self;
+	
+	#[inline(always)]
+	fn clear_all(&mut self) -> &mut Self
+	{
+		(*self).clear_all_bits();
+		self
+	}
+
+	#[inline(always)]
+	fn clear(&mut self, bit: B) -> &mut Self
+	{
+		(*self).clear_bit(bit.to_c_uint());
+		self
+	}
+	
+	#[inline(always)]
+	fn is_set(&self, bit: B) -> bool
+	{
+		(*self).is_bit_set(bit.to_c_uint())
+	}
+	
+	#[inline(always)]
+	fn set_all(&mut self) -> &mut Self
+	{
+		(*self).set_all_bits();
+		self
+	}
+
+	#[inline(always)]
+	fn set(&mut self, bit: B) -> &mut Self
+	{
+		(*self).set_bit(bit.to_c_uint());
+		self
+	}
+
+	#[inline(always)]
+	fn weight(&self) -> usize
+	{
+		(*self).weight()
+	}
 }

@@ -4,6 +4,7 @@
 
 extern crate libc;
 use self::libc::c_int;
+use self::libc::c_uint;
 use self::libc::c_void;
 use self::libc::size_t;
 use self::libc::c_longlong;
@@ -19,19 +20,29 @@ use std::mem::uninitialized;
 use super::NumaMemory;
 use super::CpuMask;
 use super::bitmask;
-use mask::Mask;
+use super::Mask;
+use super::Bit;
 
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
-pub struct NumaNode(pub c_int);
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct Node(pub c_int);
 
-impl NumaNode
+impl Bit for Node
 {
 	#[inline(always)]
-	pub fn new(value: c_int) -> NumaNode
+	fn to_c_uint(&self) -> c_uint
+	{
+		self.0 as c_uint
+	}
+}
+
+impl Node
+{
+	#[inline(always)]
+	pub fn new(value: c_int) -> Node
 	{
 		debug_assert!(value >= 0, "value {} is negative", value);
-		NumaNode(value)
+		Node(value)
 	}
 	
 	/// length, size, count
@@ -72,45 +83,45 @@ impl NumaNode
 	
 	/// numa_max_possible_node; not particularly useful, should be number_of_nodes_in_nodemask - 1
 	#[inline(always)]
-	pub fn highest_possible() -> NumaNode
+	pub fn highest_possible() -> Node
 	{
 		match unsafe { numa_max_possible_node() }
 		{
 			x if x.is_negative() => panic!("numa_max_possible_node returned a negative value {}", x),
-			x @ _ => NumaNode(x),
+			x @ _ => Node(x),
 		}
 	}
 	
 	/// USE THIS
-	pub fn highest_available_currently() -> NumaNode
+	pub fn highest_available_currently() -> Node
 	{
 		match unsafe { numa_max_node() }
 		{
 			x if x.is_negative() => panic!("numa_max_node returned a negative value {}", x),
-			x @ _ => NumaNode(x),
+			x @ _ => Node(x),
 		}
 	}
 	
-	/// If there is no preferred node, or the memory binding policy is not PREFERRED or BIND, then NumaNode will be the default (0)
+	/// If there is no preferred node, or the memory binding policy is not PREFERRED or BIND, then Node will be the default (0)
 	/// Hence it is impossible to distinguish no preference (or default to whatever CPU currently in use) from a preference for Node 0...
 	#[inline(always)]
-	pub fn preferred() -> NumaNode
+	pub fn preferred() -> Node
 	{
 		match unsafe { numa_preferred() }
 		{
 			x if x.is_negative() => panic!("numa_preferred returned a negative value {}", x),
-			x @ _ => NumaNode(x),
+			x @ _ => Node(x),
 		}
 	}
 	
 	/// It is impossible to distinguish no result from the default node
 	#[inline(always)]
-	pub fn interleaved() -> NumaNode
+	pub fn interleaved() -> Node
 	{
 		match unsafe { numa_get_interleave_node() }
 		{
 			x if x.is_negative() => panic!("numa_get_interleave_node returned a negative value {}", x),
-			x @ _ => NumaNode(x),
+			x @ _ => Node(x),
 		}
 	}
 
@@ -122,7 +133,7 @@ impl NumaNode
 	
 	/// Does not use factors or 10, but instead rescales and subtracts 1, so 0 is self
 	/// Also converts to unsigned form
-	pub fn distance(&self, to: &NumaNode) -> Option<u8>
+	pub fn distance(&self, to: &Node) -> Option<u8>
 	{
 		match unsafe { numa_distance(self.0, to.0) }
 		{
@@ -155,7 +166,7 @@ impl NumaNode
 		}
 	}
 	
-	// equivalent to setaffinity, setting the cpumask to be all the cpus belonging to this NumaNode
+	// equivalent to setaffinity, setting the cpumask to be all the cpus belonging to this Node
 	pub fn run_current_thread_on_this(&self)
 	{
 		match unsafe { numa_run_on_node(self.0) }
@@ -164,7 +175,7 @@ impl NumaNode
 			-1 => match errno().0 
 			{
 				EFAULT => panic!("numa_run_on_node EFAULT"), // really shouldn't happen
-				EINVAL => panic!("numa_run_on_node EINVAL - is the NumaNode value in range?"), // bad node number or internal call to sched_setaffinity failed
+				EINVAL => panic!("numa_run_on_node EINVAL - is the Node value in range?"), // bad node number or internal call to sched_setaffinity failed
 				EPERM => panic!("numa_run_on_node EPERM"), // really shouldn't happen
 				ESRCH => panic!("numa_run_on_node ESRCH"), // really shouldn't happen
 				unexpected @ _ => panic!("numa_run_on_node set an unexpected errno {}; this is possible because not all paths in its code seem to set errno", unexpected),
@@ -214,12 +225,12 @@ impl NumaNode
 	}
 }
 
-impl Default for NumaNode
+impl Default for Node
 {
 	#[inline(always)]
 	fn default() -> Self
 	{
-		NumaNode(0)
+		Node(0)
 	}
 }
 
