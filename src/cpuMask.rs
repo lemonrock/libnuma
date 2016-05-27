@@ -59,20 +59,26 @@ impl Hash for CpuMask
 {
 	fn hash<H: Hasher>(&self, state: &mut H)
 	{
-		self.0.hash(state)
+		self.as_ref_bitmask().hash(state)
 	}
 }
 
-// impl Clone for CpuMask
-// {
-// 	fn clone(&self) -> Self
-// 	{
-// 		CpuMask(self.0.not_quite_clone())
-// 	}
-// }
+impl Clone for CpuMask
+{
+	fn clone(&self) -> Self
+	{
+		CpuMask(self.as_ref_bitmask().internal_clone())
+	}
+}
 
 impl CpuMask
 {
+	#[inline(always)]
+	fn as_ref_bitmask(&self) -> &bitmask
+	{
+		unsafe { &*self.0 }
+	}
+	
 	#[inline(always)]
 	pub fn allocate() -> CpuMask
 	{

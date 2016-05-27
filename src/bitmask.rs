@@ -75,6 +75,14 @@ impl bitmask
 	}
 
 	#[allow(trivial_casts)]
+	pub fn internal_clone(&self) -> *mut bitmask
+	{
+		let to = unsafe { numa_bitmask_alloc(self.size as c_uint) };
+		unsafe { copy_bitmask_to_bitmask(self as *const bitmask, to as *mut bitmask) }
+		to
+	}
+
+	#[allow(trivial_casts)]
 	pub fn not_quite_clone(&self) -> &bitmask
 	{
 		let to = unsafe { numa_bitmask_alloc(self.size as c_uint) };

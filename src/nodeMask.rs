@@ -54,20 +54,26 @@ impl Hash for NodeMask
 {
 	fn hash<H: Hasher>(&self, state: &mut H)
 	{
-		self.0.hash(state)
+		self.as_ref_bitmask().hash(state)
 	}
 }
 
-// impl Clone for NodeMask
-// {
-// 	fn clone(&self) -> Self
-// 	{
-// 		NodeMask(self.0.not_quite_clone())
-// 	}
-// }
+impl Clone for NodeMask
+{
+	fn clone(&self) -> Self
+	{
+		NodeMask(self.as_ref_bitmask().internal_clone())
+	}
+}
 
 impl NodeMask
 {
+	#[inline(always)]
+	fn as_ref_bitmask(&self) -> &bitmask
+	{
+		unsafe { &*self.0 }
+	}
+	
 	#[inline(always)]
 	pub fn allocate() -> NodeMask
 	{
