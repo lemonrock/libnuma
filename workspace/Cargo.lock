@@ -1,6 +1,6 @@
 [root]
 name = "libnuma-sys"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "bitflags 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.23 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -37,12 +37,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "libnuma"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "bitflags 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "errno 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.23 (registry+https://github.com/rust-lang/crates.io-index)",
- "libnuma-sys 0.0.4",
+ "libnuma-sys 0.0.5",
 ]
 
 [[package]]

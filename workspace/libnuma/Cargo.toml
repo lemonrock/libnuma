@@ -6,6 +6,7 @@
 name = "libnuma"
 description = "A mid-level binding to libnuma that provides Linux NUMA operations"
 keywords = ["libnuma", "NUMA", "wrapper", "C", "binding"]
+categories = ["external-ffi-bindings"]
 license = "MIT"
 authors = ["Raphael Cohn <raphael.cohn@stormmq.com>"]
 documentation = "https://github.com/lemonrock/libnuma/blob/master/README.md"
@@ -15,10 +16,10 @@ exclude = ["*"]
 include = ["README.md", "LICENSE", "COPYRIGHT", "src/**/*.rs", "benches/**/*.rs", "examples/**/*.rs", "tests/**/*.rs", "Cargo.toml", "rustfmt.toml", "clippy.toml"]
 readme = "README.md"
 publish = true
-version = "0.0.4"
+version = "0.0.5"
 
 [target.'cfg(any(target_os="linux", target_os="android"))'.dependencies]
 bitflags = "^0.6"
 errno = "^0.1"
 libc = "0.2"
-libnuma-sys = { path = "../libnuma-sys", version = "0.0.4" }
+libnuma-sys = { path = "../libnuma-sys", version = "0.0.5" }

@@ -2,28 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0a290dac-533b-4a8b-8056-7cf8ab071093" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Cargo.toml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/clippy.toml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/rustfmt.toml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/bitmask.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/bits/bit.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/bits/cpu.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/bits/mod.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/bits/node.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/lib.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/masks/cpuMask.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/masks/mask.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/masks/mod.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/masks/nodeMask.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/memories/allocatableMemory.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/memories/memory.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/memories/memoryPolicy.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/memories/mod.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/memories/movePagesFlags.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/memories/numaMemory.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/memories/reAllocatableMemory.rs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/memoryPolicyFlags.rs" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/workspace/libnuma-sys/Cargo.toml" afterPath="$PROJECT_DIR$/workspace/libnuma-sys/Cargo.toml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/workspace/libnuma/Cargo.toml" afterPath="$PROJECT_DIR$/workspace/libnuma/Cargo.toml" />
     </list>
     <ignored path="$PROJECT_DIR$/workspace/libnuma/.cargo/" />
     <ignored path="$PROJECT_DIR$/workspace/libnuma/target/" />
@@ -45,38 +26,38 @@
       <file leaf-file-name="BitMask.rs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/masks/BitMask.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="744">
+            <state relative-caret-position="727">
               <caret line="52" column="54" lean-forward="false" selection-start-line="52" selection-start-column="54" selection-end-line="52" selection-end-column="54" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CpuMask.rs" pinned="false" current-in-tab="true">
+      <file leaf-file-name="CpuMask.rs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/masks/CpuMask.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="310">
+            <state relative-caret-position="293">
               <caret line="82" column="12" lean-forward="false" selection-start-line="82" selection-start-column="12" selection-end-line="82" selection-end-column="12" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AllocatableMemory.rs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/AllocatableMemory.rs">
+      <file leaf-file-name="Cargo.toml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/workspace/libnuma-sys/Cargo.toml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+            <state relative-caret-position="306">
+              <caret line="18" column="16" lean-forward="false" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Memory.rs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/Memory.rs">
+      <file leaf-file-name="Cargo.toml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/workspace/libnuma/Cargo.toml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="731">
-              <caret line="54" column="24" lean-forward="false" selection-start-line="54" selection-start-column="24" selection-end-line="54" selection-end-column="24" />
+            <state relative-caret-position="425">
+              <caret line="24" column="57" lean-forward="false" selection-start-line="24" selection-start-column="57" selection-end-line="24" selection-end-column="57" />
               <folding />
             </state>
           </provider>
@@ -95,8 +76,8 @@
       <file leaf-file-name="MemoryPolicyFlags.rs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/MemoryPolicyFlags.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+            <state relative-caret-position="289">
+              <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -105,7 +86,7 @@
       <file leaf-file-name="MovePagesFlags.rs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/MovePagesFlags.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
+            <state relative-caret-position="170">
               <caret line="10" column="22" lean-forward="false" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
               <folding />
             </state>
@@ -115,7 +96,7 @@
       <file leaf-file-name="mod.rs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/mod.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
+            <state relative-caret-position="153">
               <caret line="9" column="19" lean-forward="false" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
               <folding />
             </state>
@@ -125,8 +106,8 @@
       <file leaf-file-name="NumaMemory.rs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/NumaMemory.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+            <state relative-caret-position="238">
+              <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -135,8 +116,8 @@
       <file leaf-file-name="ReAllocatableMemory.rs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/ReAllocatableMemory.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+            <state relative-caret-position="153">
+              <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -196,8 +177,6 @@
         <option value="$PROJECT_DIR$/workspace/libnuma-sys/src/bits/cpu.rs" />
         <option value="$PROJECT_DIR$/workspace/libnuma-sys/src/bits/node.rs" />
         <option value="$PROJECT_DIR$/workspace/libnuma-sys/src/bitmask.rs" />
-        <option value="$PROJECT_DIR$/workspace/libnuma-sys/Cargo.toml" />
-        <option value="$PROJECT_DIR$/workspace/libnuma/Cargo.toml" />
         <option value="$PROJECT_DIR$/workspace/libnuma/src/bitmask.rs" />
         <option value="$PROJECT_DIR$/workspace/libnuma/src/bits/bit.rs" />
         <option value="$PROJECT_DIR$/workspace/libnuma/src/bits/node.rs" />
@@ -228,6 +207,8 @@
         <option value="$PROJECT_DIR$/workspace/libnuma/src/memories/mod.rs" />
         <option value="$PROJECT_DIR$/workspace/libnuma/src/masks/BitMask.rs" />
         <option value="$PROJECT_DIR$/workspace/libnuma/src/masks/CpuMask.rs" />
+        <option value="$PROJECT_DIR$/workspace/libnuma-sys/Cargo.toml" />
+        <option value="$PROJECT_DIR$/workspace/libnuma/Cargo.toml" />
       </list>
     </option>
   </component>
@@ -719,22 +700,6 @@
     <entry file="file://$PROJECT_DIR$/workspace/libnuma-sys/src/bits/node.rs" />
     <entry file="file://$PROJECT_DIR$/workspace/libnuma-sys/src/bitmask.rs" />
     <entry file="file://$PROJECT_DIR$/workspace/libnuma-sys/src/memoryPolicyFlags.rs" />
-    <entry file="file://$PROJECT_DIR$/workspace/libnuma-sys/Cargo.toml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="19" selection-end-column="72" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/workspace/libnuma/Cargo.toml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="24" column="0" lean-forward="true" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/bits/mod.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -868,31 +833,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/MemoryPolicyFlags.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+        <state relative-caret-position="289">
+          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/NumaMemory.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+        <state relative-caret-position="238">
+          <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/ReAllocatableMemory.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+        <state relative-caret-position="153">
+          <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/MovePagesFlags.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
+        <state relative-caret-position="170">
           <caret line="10" column="22" lean-forward="false" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
           <folding />
         </state>
@@ -900,7 +865,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/memories/mod.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
+        <state relative-caret-position="153">
           <caret line="9" column="19" lean-forward="false" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
           <folding />
         </state>
@@ -908,7 +873,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/masks/BitMask.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="744">
+        <state relative-caret-position="727">
           <caret line="52" column="54" lean-forward="false" selection-start-line="52" selection-start-column="54" selection-end-line="52" selection-end-column="54" />
           <folding />
         </state>
@@ -916,8 +881,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/workspace/libnuma/src/masks/CpuMask.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="310">
+        <state relative-caret-position="293">
           <caret line="82" column="12" lean-forward="false" selection-start-line="82" selection-start-column="12" selection-end-line="82" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/workspace/libnuma-sys/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="16" lean-forward="false" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/workspace/libnuma/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="24" column="57" lean-forward="false" selection-start-line="24" selection-start-column="57" selection-end-line="24" selection-end-column="57" />
           <folding />
         </state>
       </provider>
