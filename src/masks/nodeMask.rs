@@ -37,7 +37,6 @@ use ::memories::MovePagesFlags;
 
 
 #[derive(Debug)]
-#[unsafe_no_drop_flag]
 pub struct NodeMask(pub *mut bitmask);
 
 impl Drop for NodeMask

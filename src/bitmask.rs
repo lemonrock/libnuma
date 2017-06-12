@@ -15,7 +15,6 @@ use ::libc::c_int;
 
 #[repr(C)]
 #[derive(Debug)]
-#[unsafe_no_drop_flag]
 pub struct bitmask
 {
 	pub size: c_ulong,

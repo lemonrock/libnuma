@@ -29,7 +29,6 @@ use ::bits::Cpu;
 
 
 #[derive(Debug)]
-#[unsafe_no_drop_flag]
 pub struct CpuMask(pub *mut bitmask);
 
 impl Drop for CpuMask

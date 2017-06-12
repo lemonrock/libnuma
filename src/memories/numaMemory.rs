@@ -16,7 +16,6 @@ use ::bits::Node;
 
 
 #[derive(Debug)]
-#[unsafe_no_drop_flag]
 pub struct NumaMemory(pub *mut c_void, pub size_t);
 
 impl Memory for NumaMemory

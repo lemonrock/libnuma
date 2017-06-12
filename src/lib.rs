@@ -3,8 +3,8 @@
 
 
 #![cfg(target_os = "linux")]
-#![feature(unsafe_no_drop_flag)]
 #![feature(const_fn)]
+#![allow(non_snake_case)]
 
 
 #[macro_use] extern crate bitflags;
