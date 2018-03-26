@@ -22,4 +22,4 @@ version = "0.0.7"
 bitflags = "1.0"
 errno = "^0.1"
 libc = "0.2"
-libnuma-sys = { path = "../libnuma-sys", version = "0.0.7" }
+libnuma-sys = { path = "../libnuma-sys", version = "0.0.8" }

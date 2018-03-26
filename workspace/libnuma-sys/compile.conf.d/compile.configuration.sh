@@ -50,7 +50,7 @@ cargo_key_value_pairs()
 	cargo_key_value_pairs_search 'native' "$OUT_DIR"/root/DESTDIR/usr/lib
 	
 	# Not used by us, but used by downstream ucx-sys crate's build.
-	cargo_key_value_pairs_other 'root' "$OUT_DIR"/root/DESTDIR
+	cargo_key_value_pairs_other 'root' "$OUT_DIR"/root/DESTDIR/usr
 	cargo_key_value_pairs_other 'include' "$OUT_DIR"/root/DESTDIR/usr/include
 	cargo_key_value_pairs_other 'libdir' "$OUT_DIR"/root/DESTDIR/usr/lib
 }
