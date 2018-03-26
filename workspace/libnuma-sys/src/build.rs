@@ -13,7 +13,7 @@ fn main()
 	
 	// We deliberately run as much as possible outside of cargo as it makes it far easier to debug a long, complex build which has little to do with Rust.
 	// Of course, this script, being shell, won't run under Windows.
-	tool(&cargo_manifest_folder_path, "bindgen-wrapper/build-under-cargo");
+	println!("{}", tool(&cargo_manifest_folder_path, "bindgen-wrapper/build-under-cargo"));
 }
 
 fn tool(cargo_manifest_folder_path: &str, program_name: &'static str) -> String

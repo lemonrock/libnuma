@@ -16,10 +16,10 @@ exclude = ["*"]
 include = ["README.md", "LICENSE", "COPYRIGHT", "src/**/*.rs", "benches/**/*.rs", "examples/**/*.rs", "tests/**/*.rs", "Cargo.toml", "rustfmt.toml", "clippy.toml"]
 readme = "README.md"
 publish = true
-version = "0.0.5"
+version = "0.0.7"
 
 [target.'cfg(any(target_os="linux", target_os="android"))'.dependencies]
 bitflags = "1.0"
 errno = "^0.1"
 libc = "0.2"
-libnuma-sys = { path = "../libnuma-sys", version = "0.0.6" }
+libnuma-sys = { path = "../libnuma-sys", version = "0.0.7" }
