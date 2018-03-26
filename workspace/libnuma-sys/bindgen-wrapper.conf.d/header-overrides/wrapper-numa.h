@@ -2,13 +2,4 @@
 // Copyright © 2016-2018 The developers of libnuma. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/lemonrock/libnuma/master/COPYRIGHT.
 
 
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Ord, PartialOrd)]
-#[repr(i32)]
-#[allow(non_camel_case_types)] 
-pub enum MemoryPolicy
-{
-	MPOL_DEFAULT = 0,
-	MPOL_PREFERRED = 1,
-	MPOL_BIND = 2,
-	MPOL_INTERLEAVE = 3,
-}
+#include "numa.h"

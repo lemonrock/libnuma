@@ -1,3 +1,9 @@
 [submodule ".cargo"]
 	path = .cargo
 	url = https://github.com/lemonrock/.cargo.git
+[submodule "workspace/libnuma-sys/lib/numactl"]
+	path = workspace/libnuma-sys/lib/numactl
+	url = https://github.com/numactl/numactl.git
+[submodule "workspace/libnuma-sys/tools/bindgen-wrapper"]
+	path = workspace/libnuma-sys/tools/bindgen-wrapper
+	url = https://github.com/lemonrock/bindgen-wrapper

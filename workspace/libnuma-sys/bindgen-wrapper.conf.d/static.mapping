@@ -1,0 +1,8 @@
+numa_all_nodes_ptr NumaNodesBitMask
+numa_nodes_ptr NumaNodesBitMask
+numa_all_cpus_ptr NumaNodesBitMask
+numa_no_nodes_ptr NumaNodesBitMask
+numa_all_nodes NumaNodesBitMask
+numa_exit_on_error NumaExit
+numa_exit_on_warn NumaExit
+numa_no_nodes NumaNodeMask

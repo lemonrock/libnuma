@@ -4,6 +4,7 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/.cargo" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/workspace/libnuma-sys/.cargo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/workspace/libnuma-sys/lib/numactl" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/workspace/libnuma/.cargo" vcs="Git" />
   </component>
 </project>
