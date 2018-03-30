@@ -17,7 +17,7 @@ readme = "README.md"
 build = "src/build.rs"
 links = "libnuma"
 publish = true
-version = "0.0.8"
+version = "0.0.9"
 
 [target.'cfg(any(target_os="linux", target_os="android"))'.dependencies]
 libc = "0.2"
